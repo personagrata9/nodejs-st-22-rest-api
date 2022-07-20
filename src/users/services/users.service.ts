@@ -53,13 +53,9 @@ export class UsersService {
   create = (createUserDto: CreateUserDto): Promise<IUser> =>
     new Promise((resolve) => {
       const id: string = uuidv4();
-      const { login, password, age, isDeleted } = createUserDto;
       const newUser: IUser = {
         id,
-        login,
-        password,
-        age,
-        isDeleted,
+        ...createUserDto,
       };
       this.usersDB.push(newUser);
 
@@ -71,14 +67,10 @@ export class UsersService {
 
     return new Promise((resolve, reject) => {
       if (user) {
-        const { login, password, age, isDeleted } = user;
-
         const updatedUser: IUser = {
           id,
-          login: updateUserDto.login || login,
-          password: updateUserDto.password || password,
-          age: updateUserDto.age || age,
-          isDeleted: updateUserDto.isDeleted || isDeleted,
+          ...user,
+          ...updateUserDto,
         };
 
         const userIndex = this.usersDB.findIndex((user) => user.id === id);

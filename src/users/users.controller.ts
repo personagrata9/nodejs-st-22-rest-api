@@ -4,9 +4,9 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
-  HttpStatus,
+  NotFoundException,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -14,29 +14,11 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { IUser } from './models/user.model';
 import { UsersService } from './services/users.service';
-import { validate as uuidValidate } from 'uuid';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  private validateUserId = (id: string): void => {
-    const isUuid = uuidValidate(id);
-    if (!isUuid) {
-      throw new HttpException(
-        `'${id}' is not a valid UUID`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  };
-
-  private throwUserNotFoundExeption = (id: string) => {
-    throw new HttpException(
-      `User with id '${id}' not found`,
-      HttpStatus.NOT_FOUND,
-    );
-  };
 
   @Get()
   async getAutoSuggestUsers(@Query() query: any) {
@@ -54,13 +36,13 @@ export class UsersController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<IUser> {
-    this.validateUserId(id);
-
+  async getById(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<IUser> {
     try {
       return await this.usersService.findOneById(id);
     } catch {
-      this.throwUserNotFoundExeption(id);
+      throw new NotFoundException(`User with id '${id}' not found`);
     }
   }
 
@@ -71,27 +53,23 @@ export class UsersController {
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
-    this.validateUserId(id);
-
     try {
       return await this.usersService.update(id, updateUserDto);
     } catch {
-      this.throwUserNotFoundExeption(id);
+      throw new NotFoundException(`User with id '${id}' not found`);
     }
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param('id') id: string) {
-    this.validateUserId(id);
-
+  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
       return await this.usersService.delete(id);
     } catch {
-      this.throwUserNotFoundExeption(id);
+      throw new NotFoundException(`User with id '${id}' not found`);
     }
   }
 }
