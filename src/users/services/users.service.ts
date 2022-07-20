@@ -14,8 +14,8 @@ export class UsersService {
   }
 
   findAutoSuggestUsers = (
-    limit: string,
-    offset: string,
+    limit: number,
+    offset: number,
     loginSubstring: string | undefined,
   ): Promise<IUser[]> =>
     new Promise((resolve) => {
@@ -26,7 +26,7 @@ export class UsersService {
       const users = filteredByLoginSubstringUsers
         .filter((user) => !user.isDeleted)
         .sort((a, b) => a.login.localeCompare(b.login))
-        .slice(+offset, +limit + +offset);
+        .slice(offset, limit + offset);
 
       resolve(users);
     });
@@ -66,12 +66,10 @@ export class UsersService {
       resolve(newUser);
     });
 
-  update = (id: string, updateUserDto: UpdateUserDto): Promise<IUser> =>
-    new Promise((resolve, reject) => {
-      const user = this.usersDB.find(
-        (user) => user.id === id && !user.isDeleted,
-      );
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
+    const user = await this.findOneById(id);
 
+    return new Promise((resolve, reject) => {
       if (user) {
         const { login, password, age, isDeleted } = user;
 
@@ -91,13 +89,12 @@ export class UsersService {
         reject();
       }
     });
+  };
 
-  delete = (id: string): Promise<void> =>
-    new Promise((resolve, reject) => {
-      const user = this.usersDB.find(
-        (user) => user.id === id && !user.isDeleted,
-      );
+  delete = async (id: string): Promise<void> => {
+    const user = await this.findOneById(id);
 
+    return new Promise((resolve, reject) => {
       if (user) {
         const userIndex = this.usersDB.findIndex((user) => user.id === id);
         this.usersDB.splice(userIndex, 1, { ...user, isDeleted: true });
@@ -107,4 +104,5 @@ export class UsersService {
         reject();
       }
     });
+  };
 }

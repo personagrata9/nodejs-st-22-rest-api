@@ -31,17 +31,24 @@ export class UsersController {
     }
   };
 
+  private throwUserNotFoundExeption = (id: string) => {
+    throw new HttpException(
+      `User with id '${id}' not found`,
+      HttpStatus.NOT_FOUND,
+    );
+  };
+
   @Get()
   async getAutoSuggestUsers(@Query() query: any) {
     const { limit = 10, offset = 0, loginSubstring } = query;
     return {
       items: await this.usersService.findAutoSuggestUsers(
-        limit,
-        offset,
+        +limit,
+        +offset,
         loginSubstring,
       ),
-      limit,
-      offset,
+      limit: +limit,
+      offset: +offset,
       count: await this.usersService.count(),
     };
   }
@@ -53,10 +60,7 @@ export class UsersController {
     try {
       return await this.usersService.findOneById(id);
     } catch {
-      throw new HttpException(
-        `User with id '${id}' not found`,
-        HttpStatus.NOT_FOUND,
-      );
+      this.throwUserNotFoundExeption(id);
     }
   }
 
@@ -75,10 +79,7 @@ export class UsersController {
     try {
       return await this.usersService.update(id, updateUserDto);
     } catch {
-      throw new HttpException(
-        `User with id '${id}' not found`,
-        HttpStatus.NOT_FOUND,
-      );
+      this.throwUserNotFoundExeption(id);
     }
   }
 
@@ -90,10 +91,7 @@ export class UsersController {
     try {
       return await this.usersService.delete(id);
     } catch {
-      throw new HttpException(
-        `User with id '${id}' not found`,
-        HttpStatus.NOT_FOUND,
-      );
+      this.throwUserNotFoundExeption(id);
     }
   }
 }
