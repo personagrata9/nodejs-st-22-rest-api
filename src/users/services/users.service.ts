@@ -38,16 +38,12 @@ export class UsersService {
     });
 
   findOneById = (id: string): Promise<IUser> =>
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       const user = this.usersDB.find(
         (user) => user.id === id && !user.isDeleted,
       );
 
-      if (user) {
-        resolve(user);
-      } else {
-        reject();
-      }
+      resolve(user);
     });
 
   create = (createUserDto: CreateUserDto): Promise<IUser> =>
@@ -65,36 +61,28 @@ export class UsersService {
   update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
     const user = await this.findOneById(id);
 
-    return new Promise((resolve, reject) => {
-      if (user) {
-        const updatedUser: IUser = {
-          id,
-          ...user,
-          ...updateUserDto,
-        };
+    return new Promise((resolve) => {
+      const updatedUser: IUser = {
+        id,
+        ...user,
+        ...updateUserDto,
+      };
 
-        const userIndex = this.usersDB.findIndex((user) => user.id === id);
-        this.usersDB.splice(userIndex, 1, updatedUser);
+      const userIndex = this.usersDB.findIndex((user) => user.id === id);
+      this.usersDB.splice(userIndex, 1, updatedUser);
 
-        resolve(updatedUser);
-      } else {
-        reject();
-      }
+      resolve(updatedUser);
     });
   };
 
   delete = async (id: string): Promise<void> => {
     const user = await this.findOneById(id);
 
-    return new Promise((resolve, reject) => {
-      if (user) {
-        const userIndex = this.usersDB.findIndex((user) => user.id === id);
-        this.usersDB.splice(userIndex, 1, { ...user, isDeleted: true });
+    return new Promise((resolve) => {
+      const userIndex = this.usersDB.findIndex((user) => user.id === id);
+      this.usersDB.splice(userIndex, 1, { ...user, isDeleted: true });
 
-        resolve();
-      } else {
-        reject();
-      }
+      resolve();
     });
   };
 }

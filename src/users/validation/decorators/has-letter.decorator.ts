@@ -4,25 +4,28 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
-export function HasNumber(
+export function HasLetter(
   property: string,
   validationOptions?: ValidationOptions,
 ) {
   return function (object: any, propertyName: string) {
     registerDecorator({
-      name: 'HasNumber',
+      name: 'HasLetter',
       target: object.constructor,
       propertyName: propertyName,
       constraints: [property],
-      options: validationOptions,
+      options: {
+        message: `${property} must contain at least one letter`,
+        ...validationOptions,
+      },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: string, args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
           const relatedValue = (args.object as any)[relatedPropertyName];
           return (
             typeof value === 'string' &&
             typeof relatedValue === 'string' &&
-            /\d/.test(value)
+            /[a-zA-Z]/.test(value)
           );
         },
       },

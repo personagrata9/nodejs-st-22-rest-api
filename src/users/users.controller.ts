@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -15,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { IUser } from './models/user.model';
 import { UsersService } from './services/users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserByIdPipe } from './validation/pipes/user-by-id.pipe';
 
 @Controller('v1/users')
 export class UsersController {
@@ -37,13 +37,9 @@ export class UsersController {
 
   @Get(':id')
   async getById(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
   ): Promise<IUser> {
-    try {
-      return await this.usersService.findOneById(id);
-    } catch {
-      throw new NotFoundException(`User with id '${id}' not found`);
-    }
+    return await this.usersService.findOneById(id);
   }
 
   @Post()
@@ -53,23 +49,17 @@ export class UsersController {
 
   @Put(':id')
   async update(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
-    try {
-      return await this.usersService.update(id, updateUserDto);
-    } catch {
-      throw new NotFoundException(`User with id '${id}' not found`);
-    }
+    return await this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    try {
-      return await this.usersService.delete(id);
-    } catch {
-      throw new NotFoundException(`User with id '${id}' not found`);
-    }
+  async delete(
+    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
+  ) {
+    return await this.usersService.delete(id);
   }
 }
