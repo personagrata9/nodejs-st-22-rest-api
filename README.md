@@ -51,10 +51,9 @@ Service by default use 3000 as the listening port. You can change port by settin
 - **GET** `v1/users/${userId}`
 
   - Server will answer with `status code` **200** and a record with `id === userId` if it exists
-  - Server will answer with `status code` **400** and message **'Validation failed (uuid v 4 is expected)
-    '**
+  - Server will answer with `status code` **400** and message **'Validation failed (uuid v 4 is expected)'**
     if `userId` is invalid (not `uuid`)
-  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is deleted
+  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is marked as deleted
 
 - **POST** `v1/users` is used to create record about new user and store it in database
 
@@ -65,14 +64,13 @@ Service by default use 3000 as the listening port. You can change port by settin
 
   - Server will answer with` status code` **200** and updated record if succeed
   - Server will answer with `status code` **400** and detailed error message if request `body` does not contain **required** fields or fields are not valid
-  - Server will answer with` status code` **400** and message **’Validation failed (uuid v 4 is expected)
-    ’** if `userId` is invalid (not `uuid`)
-  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is deleted
+  - Server will answer with` status code` **400** and message **'Validation failed (uuid v 4 is expected)'** if `userId` is invalid (not `uuid`)
+  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is marked as deleted
 
 - **DELETE** `v1/users/${userId}` is used to remove (soft delete) existing user
   - Server will answer with `status code` **204** if the record is found and deleted
-  - Server will answer with` status code` **400** and message **${userId} is not a valid UUID** if `userId` is invalid (not `uuid`)
-  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is deleted
+  - Server will answer with` status code` **400** and message **'Validation failed (uuid v 4 is expected)'** if `userId` is invalid (not `uuid`)
+  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is marked as deleted
 
 2. Users are stored as `objects` that have following properties:
 
