@@ -46,9 +46,19 @@ export class UsersService {
       resolve(user);
     });
 
-  create = (createUserDto: CreateUserDto): Promise<IUser> =>
-    new Promise((resolve) => {
-      const id: string = uuidv4();
+  private createUserId = async (): Promise<string> => {
+    const id: string = uuidv4();
+
+    const isUserExist = await this.findOneById(id);
+    if (isUserExist) await this.createUserId();
+
+    return id;
+  };
+
+  create = async (createUserDto: CreateUserDto): Promise<IUser> => {
+    const id: string = await this.createUserId();
+
+    return new Promise((resolve) => {
       const newUser: IUser = {
         id,
         ...createUserDto,
@@ -57,21 +67,34 @@ export class UsersService {
 
       resolve(newUser);
     });
+  };
 
   update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
     const user = await this.findOneById(id);
 
-    return new Promise((resolve) => {
-      const updatedUser: IUser = {
-        id,
-        ...user,
-        ...updateUserDto,
-      };
+    return new Promise((resolve, reject) => {
+      const { login } = updateUserDto;
+      const logins = this.usersDB
+        .filter((user) => user.id !== id)
+        .map((user) => user.login);
 
-      const userIndex = this.usersDB.findIndex((user) => user.id === id);
-      this.usersDB.splice(userIndex, 1, updatedUser);
+      if (login === user.login || !logins.includes(login)) {
+        const updatedUser: IUser = {
+          id,
+          ...updateUserDto,
+        };
 
-      resolve(updatedUser);
+        const userIndex = this.usersDB.findIndex((user) => user.id === id);
+        this.usersDB.splice(userIndex, 1, updatedUser);
+
+        resolve(updatedUser);
+      } else {
+        reject(
+          new Error(
+            `user with login ${login} already exists, please choose another login`,
+          ),
+        );
+      }
     });
   };
 

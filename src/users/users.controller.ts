@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -52,7 +53,11 @@ export class UsersController {
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
-    return await this.usersService.update(id, updateUserDto);
+    try {
+      return await this.usersService.update(id, updateUserDto);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   @Delete(':id')
