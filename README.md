@@ -1,73 +1,87 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# REST service with CRUD operations
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Node version: v16.16.0
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## How to start
 
-## Description
+Follow the steps below to install and run the service:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Step 1. Clone this repo.
 
-## Installation
+Step 2. Install all modules listed as dependencies in package:
 
 ```bash
-$ npm install
+npm install
 ```
 
-## Running the app
+or
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm i
 ```
 
-## Test
+Step 3. Copy and rename env.example to .env
+
+Step 4. Run the service using one of the options below:
+
+1. development mode:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Support
+2. production mode - to start the build process and then run the bundled file:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run start:prod
+```
 
-## Stay in touch
+Service by default use 3000 as the listening port. You can change port by setting the desired one in `.env` file at the root directory of the project (`PORT=port_number`) or using environment variable `PORT` when running the service.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Implementation details
 
-## License
+1. Endpoint `v1/users`:
 
-Nest is [MIT licensed](LICENSE).
+- **GET** `v1/users` is used to get users collection
+
+  - Server will answer with `status code` **200** and users records
+  - You can get auto-suggest list from `limit` (by default limit is 10) users, sorted by login property and filtered by
+    `loginSubstring` in the login property using query parameters (example: `localhost:3000/v1/users?limit=5&loginSubstring=1`)
+
+- **GET** `v1/users/${userId}`
+
+  - Server will answer with `status code` **200** and a record with `id === userId` if it exists
+  - Server will answer with `status code` **400** and message **'Validation failed (uuid v 4 is expected)
+    '**
+    if `userId` is invalid (not `uuid`)
+  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is deleted
+
+- **POST** `v1/users` is used to create record about new user and store it in database
+
+  - Server will answer with `status code` **201** and newly created record if succeed
+  - Server will answer with `status code` **400** and detailed error message if request `body` does not contain **required** fields or fields are not valid
+
+- **PUT** `v1/users/${userId}` is used to update existing user
+
+  - Server will answer with` status code` **200** and updated record if succeed
+  - Server will answer with `status code` **400** and detailed error message if request `body` does not contain **required** fields or fields are not valid
+  - Server will answer with` status code` **400** and message **’Validation failed (uuid v 4 is expected)
+    ’** if `userId` is invalid (not `uuid`)
+  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is deleted
+
+- **DELETE** `v1/users/${userId}` is used to remove (soft delete) existing user
+  - Server will answer with `status code` **204** if the record is found and deleted
+  - Server will answer with` status code` **400** and message **${userId} is not a valid UUID** if `userId` is invalid (not `uuid`)
+  - Server will answer with `status code` **404** and message **'user with id ${userId} not found'** if record with `id === userId` doesn't exist or is deleted
+
+2. Users are stored as `objects` that have following properties:
+
+- `id` — unique identifier (`string`, `uuid`) generated on server side
+- `login` — user login (`string`, **required**)
+- `password` — user login (`string`, **required**) - must contain letters and numbers
+- `age` — user age (`number`, **required**) - must be between 4 and 130
+- `isDeleted` - flag to indicate if user is deleted (`boolean`, **required**)
+
+## Testing
+
+To test the service CRUD methods, you can use Postman (https://www.postman.com).

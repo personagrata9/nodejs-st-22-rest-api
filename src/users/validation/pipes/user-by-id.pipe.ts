@@ -12,7 +12,7 @@ export class UserByIdPipe implements PipeTransform {
     if (user) {
       return value;
     } else {
-      throw new NotFoundException(`User with id ${value} not found`);
+      throw new NotFoundException(`user with id ${value} not found`);
     }
   }
 }
