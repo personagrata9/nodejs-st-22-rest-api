@@ -78,7 +78,7 @@ Service by default use 3000 as the listening port. You can change port by settin
 - `login` — user login (`string`, **required**)
 - `password` — user login (`string`, **required**) - must contain letters and numbers
 - `age` — user age (`number`, **required**) - must be between 4 and 130
-- `isDeleted` - flag to indicate if user is deleted (`boolean`, **required**)
+- `isDeleted` - flag to indicate if user is deleted (`boolean`)
 
 ## Testing
 

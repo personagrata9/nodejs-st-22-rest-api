@@ -1,7 +1,6 @@
 import {
   IsString,
   IsInt,
-  IsBoolean,
   IsNotEmpty,
   IsDefined,
   Min,
@@ -29,8 +28,4 @@ export class CreateUserDto {
   @IsInt()
   @IsDefined({ message: '$property is required' })
   age: number;
-
-  @IsBoolean()
-  @IsDefined({ message: '$property is required' })
-  isDeleted: boolean;
 }

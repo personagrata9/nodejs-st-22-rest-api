@@ -62,6 +62,7 @@ export class UsersService {
       const newUser: IUser = {
         id,
         ...createUserDto,
+        isDeleted: false,
       };
       this.usersDB.push(newUser);
 
@@ -82,6 +83,7 @@ export class UsersService {
         const updatedUser: IUser = {
           id,
           ...updateUserDto,
+          isDeleted: false,
         };
 
         const userIndex = this.usersDB.findIndex((user) => user.id === id);
