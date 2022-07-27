@@ -4,7 +4,7 @@ import {
   NotFoundException,
   Inject,
 } from '@nestjs/common';
-import { IUser } from 'src/users/models/user.model';
+import { IUser } from '../../interfaces/user.interface';
 import { UsersRepository } from 'src/users/repository/users.repository';
 
 @Injectable()

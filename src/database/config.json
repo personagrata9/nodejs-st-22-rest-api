@@ -1,0 +1,26 @@
+{
+  "development": {
+    "dialect": "postgres",
+    "host": "tyke.db.elephantsql.com",
+    "port": 5432,
+    "username": "dsmcehjd",
+    "password": "4pWEHzBci925PfsoinzTbMQ_lHROzqJR",
+    "database": "dsmcehjd"
+  },
+  "test": {
+    "dialect": "postgres",
+    "host": "tyke.db.elephantsql.com",
+    "port": 5432,
+    "username": "dsmcehjd",
+    "password": "4pWEHzBci925PfsoinzTbMQ_lHROzqJR",
+    "database": "dsmcehjd"
+  },
+  "production": {
+    "dialect": "postgres",
+    "host": "tyke.db.elephantsql.com",
+    "port": 5432,
+    "username": "dsmcehjd",
+    "password": "4pWEHzBci925PfsoinzTbMQ_lHROzqJR",
+    "database": "dsmcehjd"
+  }
+}

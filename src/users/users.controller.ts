@@ -12,7 +12,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { IUser } from './models/user.model';
+import { IUser } from './interfaces/user.interface';
 import { UsersService } from './services/users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserByIdPipe } from './validation/pipes/user-by-id.pipe';

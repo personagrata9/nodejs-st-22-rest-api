@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { IUser } from '../models/user.model';
+import { IUser } from '../interfaces/user.interface';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UsersRepository } from '../repository/users.repository';
 import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
