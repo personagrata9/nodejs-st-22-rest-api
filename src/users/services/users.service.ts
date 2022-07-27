@@ -1,113 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { IUser } from '../models/user.model';
-import { v4 as uuidv4 } from 'uuid';
-import { usersDB } from 'src/db/users.db';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UsersRepository } from '../repository/users.repository';
+import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
 
 @Injectable()
 export class UsersService {
-  private usersDB: IUser[];
+  constructor(
+    @Inject('UsersRepository') private usersRepository: UsersRepository,
+  ) {}
 
-  constructor() {
-    this.usersDB = usersDB;
-  }
-
-  findAutoSuggestUsers = (
+  findAutoSuggestUsers = async (
     limit: number,
     offset: number,
     loginSubstring: string | undefined,
-  ): Promise<IUser[]> =>
-    new Promise((resolve) => {
-      const filteredByLoginSubstringUsers = loginSubstring
-        ? this.usersDB.filter((user) => user.login.includes(loginSubstring))
-        : this.usersDB;
+  ): Promise<PaginatedItemsResult<IUser>> => {
+    const items: IUser[] = await this.usersRepository.findAll(
+      limit,
+      offset,
+      loginSubstring,
+    );
 
-      const users = filteredByLoginSubstringUsers
-        .filter((user) => !user.isDeleted)
-        .sort((a, b) => a.login.localeCompare(b.login))
-        .slice(offset, limit + offset);
+    const count: number = await this.usersRepository.count(loginSubstring);
 
-      resolve(users);
-    });
-
-  count = (): Promise<number> =>
-    new Promise((resolve) => {
-      const count = this.usersDB.length;
-      resolve(count);
-    });
-
-  findOneById = (id: string): Promise<IUser> =>
-    new Promise((resolve) => {
-      const user = this.usersDB.find(
-        (user) => user.id === id && !user.isDeleted,
-      );
-
-      resolve(user);
-    });
-
-  private createUserId = async (): Promise<string> => {
-    const id: string = uuidv4();
-
-    const isUserExist = await this.findOneById(id);
-    if (isUserExist) await this.createUserId();
-
-    return id;
+    return {
+      items,
+      limit,
+      offset,
+      count,
+    };
   };
 
-  create = async (createUserDto: CreateUserDto): Promise<IUser> => {
-    const id: string = await this.createUserId();
+  findOneById = async (id: string): Promise<IUser> =>
+    await this.usersRepository.findOneById(id);
 
-    return new Promise((resolve) => {
-      const newUser: IUser = {
-        id,
-        ...createUserDto,
-        isDeleted: false,
-      };
-      this.usersDB.push(newUser);
+  create = async (createUserDto: CreateUserDto): Promise<IUser> =>
+    await this.usersRepository.create(createUserDto);
 
-      resolve(newUser);
-    });
-  };
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> =>
+    this.usersRepository.update(id, updateUserDto);
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
-    const user = await this.findOneById(id);
-
-    return new Promise((resolve, reject) => {
-      const { login } = updateUserDto;
-      const logins = this.usersDB
-        .filter((user) => user.id !== id)
-        .map((user) => user.login);
-
-      if (login === user.login || !logins.includes(login)) {
-        const updatedUser: IUser = {
-          id,
-          ...updateUserDto,
-          isDeleted: false,
-        };
-
-        const userIndex = this.usersDB.findIndex((user) => user.id === id);
-        this.usersDB.splice(userIndex, 1, updatedUser);
-
-        resolve(updatedUser);
-      } else {
-        reject(
-          new Error(
-            `user with login ${login} already exists, please choose another login`,
-          ),
-        );
-      }
-    });
-  };
-
-  delete = async (id: string): Promise<void> => {
-    const user = await this.findOneById(id);
-
-    return new Promise((resolve) => {
-      const userIndex = this.usersDB.findIndex((user) => user.id === id);
-      this.usersDB.splice(userIndex, 1, { ...user, isDeleted: true });
-
-      resolve();
-    });
-  };
+  delete = async (id: string): Promise<void> => this.usersRepository.delete(id);
 }

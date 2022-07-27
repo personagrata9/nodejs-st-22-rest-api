@@ -16,24 +16,22 @@ import { IUser } from './models/user.model';
 import { UsersService } from './services/users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserByIdPipe } from './validation/pipes/user-by-id.pipe';
+import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
 
 @Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async getAutoSuggestUsers(@Query() query: any) {
+  async getAutoSuggestUsers(
+    @Query() query: any,
+  ): Promise<PaginatedItemsResult<IUser>> {
     const { limit = 10, offset = 0, loginSubstring } = query;
-    return {
-      items: await this.usersService.findAutoSuggestUsers(
-        +limit,
-        +offset,
-        loginSubstring,
-      ),
-      limit: +limit,
-      offset: +offset,
-      count: await this.usersService.count(),
-    };
+    return await this.usersService.findAutoSuggestUsers(
+      +limit,
+      +offset,
+      loginSubstring,
+    );
   }
 
   @Get(':id')
@@ -45,7 +43,11 @@ export class UsersController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
-    return await this.usersService.create(createUserDto);
+    try {
+      return await this.usersService.create(createUserDto);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   @Put(':id')
