@@ -4,6 +4,7 @@ import { IUser } from '../interfaces/user.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersRepository } from './users.repository';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
@@ -19,34 +20,28 @@ export class InMemoryUsersRepository implements UsersRepository {
     limit: number,
     offset: number,
     loginSubstring?: string,
-  ): Promise<IUser[]> =>
+  ): Promise<PaginatedItemsResult<IUser>> =>
     new Promise((resolve) => {
       const existingUsers: IUser[] = this.users.filter(
         (user) => !user.isDeleted,
       );
 
       const filteredByLoginSubstringUsers: IUser[] = loginSubstring
-        ? existingUsers.filter((user) => user.login.includes(loginSubstring))
+        ? existingUsers.filter((user) =>
+            user.login.toLowerCase().includes(loginSubstring.toLowerCase()),
+          )
         : existingUsers;
 
       const items: IUser[] = filteredByLoginSubstringUsers
         .sort((a, b) => a.login.localeCompare(b.login))
         .slice(offset, limit + offset);
 
-      resolve(items);
-    });
-
-  count = async (loginSubstring?: string): Promise<number> =>
-    new Promise((resolve) => {
-      const existingUsers: IUser[] = this.users.filter(
-        (user) => !user.isDeleted,
-      );
-
-      const filteredByLoginSubstringUsers: IUser[] = loginSubstring
-        ? existingUsers.filter((user) => user.login.includes(loginSubstring))
-        : existingUsers;
-
-      resolve(filteredByLoginSubstringUsers.length);
+      resolve({
+        items,
+        limit,
+        offset,
+        count: filteredByLoginSubstringUsers.length,
+      });
     });
 
   private createUserId = async (): Promise<string> => {

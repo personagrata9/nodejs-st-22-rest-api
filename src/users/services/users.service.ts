@@ -15,22 +15,8 @@ export class UsersService {
     limit: number,
     offset: number,
     loginSubstring: string | undefined,
-  ): Promise<PaginatedItemsResult<IUser>> => {
-    const items: IUser[] = await this.usersRepository.findAll(
-      limit,
-      offset,
-      loginSubstring,
-    );
-
-    const count: number = await this.usersRepository.count(loginSubstring);
-
-    return {
-      items,
-      limit,
-      offset,
-      count,
-    };
-  };
+  ): Promise<PaginatedItemsResult<IUser>> =>
+    await this.usersRepository.findAll(limit, offset, loginSubstring);
 
   findOneById = async (id: string): Promise<IUser> =>
     await this.usersRepository.findOneById(id);
