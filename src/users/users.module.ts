@@ -1,5 +1,6 @@
+import 'dotenv/config';
 import { Module } from '@nestjs/common';
-// import { InMemoryUsersRepository } from './repository/in-memory-users.repository';
+import { InMemoryUsersRepository } from './repository/in-memory-users.repository';
 import { SequelizeUsersRepository } from './repository/sequelize-users.repository';
 import { UsersService } from './services/users.service';
 import { UsersController } from './users.controller';
@@ -10,7 +11,10 @@ import { UsersController } from './users.controller';
     UsersService,
     {
       provide: 'UsersRepository',
-      useClass: SequelizeUsersRepository,
+      useClass:
+        process.env.NODE_ENV === 'test'
+          ? InMemoryUsersRepository
+          : SequelizeUsersRepository,
     },
   ],
 })
