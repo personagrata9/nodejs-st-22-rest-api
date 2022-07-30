@@ -17,9 +17,13 @@ export class UserByIdPipe implements PipeTransform {
     const user: User = await this.usersRepository.findOneById(id);
 
     if (user) {
+      if (user.isDeleted) {
+        throw new NotFoundException(`user with id ${id} is deleted`);
+      }
+
       return id;
     } else {
-      throw new NotFoundException(`user with id ${id} not found`);
+      throw new NotFoundException(`user with id ${id} doesn't exist`);
     }
   }
 }

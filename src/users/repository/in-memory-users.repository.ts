@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { User } from '../interfaces/user.interface';
-import { v4 as uuidv4 } from 'uuid';
 import { UsersRepository } from './users.repository';
+import { User } from '../interfaces/user.interface';
+import { PaginatedItemsResult } from '../../interfaces/paginated-items-result.interface';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
@@ -12,7 +12,7 @@ export class InMemoryUsersRepository implements UsersRepository {
 
   findOneById = async (id: string): Promise<User | undefined> =>
     new Promise((resolve) => {
-      const user = this.users.find((user) => user.id === id);
+      const user: User = this.users.find((user) => user.id === id);
       resolve(user);
     });
 
@@ -47,8 +47,8 @@ export class InMemoryUsersRepository implements UsersRepository {
   private createUserId = async (): Promise<string> => {
     const id: string = uuidv4();
 
-    const isUserExist = await this.findOneById(id);
-    if (isUserExist) await this.createUserId();
+    const user: User = await this.findOneById(id);
+    if (user) await this.createUserId();
 
     return id;
   };
@@ -103,7 +103,9 @@ export class InMemoryUsersRepository implements UsersRepository {
           isDeleted: false,
         };
 
-        const userIndex = this.users.findIndex((user) => user.id === id);
+        const userIndex: number = this.users.findIndex(
+          (user) => user.id === id,
+        );
         this.users.splice(userIndex, 1, updatedUser);
 
         resolve(updatedUser);
@@ -118,10 +120,10 @@ export class InMemoryUsersRepository implements UsersRepository {
   };
 
   delete = async (id: string): Promise<void> => {
-    const user = await this.findOneById(id);
+    const user: User = await this.findOneById(id);
 
     return new Promise((resolve) => {
-      const userIndex = this.users.findIndex((user) => user.id === id);
+      const userIndex: number = this.users.findIndex((user) => user.id === id);
       this.users.splice(userIndex, 1, { ...user, isDeleted: true });
 
       resolve();
