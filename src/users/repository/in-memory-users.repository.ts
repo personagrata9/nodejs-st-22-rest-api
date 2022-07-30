@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { IUser } from '../interfaces/user.interface';
+import { User } from '../interfaces/user.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersRepository } from './users.repository';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -8,9 +8,9 @@ import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.inte
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
-  private users: IUser[] = [];
+  private users: User[] = [];
 
-  findOneById = async (id: string): Promise<IUser | undefined> =>
+  findOneById = async (id: string): Promise<User | undefined> =>
     new Promise((resolve) => {
       const user = this.users.find((user) => user.id === id);
       resolve(user);
@@ -20,19 +20,19 @@ export class InMemoryUsersRepository implements UsersRepository {
     limit: number,
     offset: number,
     loginSubstring?: string,
-  ): Promise<PaginatedItemsResult<IUser>> =>
+  ): Promise<PaginatedItemsResult<User>> =>
     new Promise((resolve) => {
-      const existingUsers: IUser[] = this.users.filter(
+      const existingUsers: User[] = this.users.filter(
         (user) => !user.isDeleted,
       );
 
-      const filteredByLoginSubstringUsers: IUser[] = loginSubstring
+      const filteredByLoginSubstringUsers: User[] = loginSubstring
         ? existingUsers.filter((user) =>
             user.login.toLowerCase().includes(loginSubstring.toLowerCase()),
           )
         : existingUsers;
 
-      const items: IUser[] = filteredByLoginSubstringUsers
+      const items: User[] = filteredByLoginSubstringUsers
         .sort((a, b) => a.login.localeCompare(b.login))
         .slice(offset, limit + offset);
 
@@ -65,7 +65,7 @@ export class InMemoryUsersRepository implements UsersRepository {
       resolve(!usersLogins.includes(login));
     });
 
-  create = async (createUserDto: CreateUserDto): Promise<IUser> => {
+  create = async (createUserDto: CreateUserDto): Promise<User> => {
     const { login } = createUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login);
 
@@ -73,7 +73,7 @@ export class InMemoryUsersRepository implements UsersRepository {
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
-        const newUser: IUser = {
+        const newUser: User = {
           id,
           ...createUserDto,
           isDeleted: false,
@@ -91,13 +91,13 @@ export class InMemoryUsersRepository implements UsersRepository {
     });
   };
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<User> => {
     const { login } = updateUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login, id);
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
-        const updatedUser: IUser = {
+        const updatedUser: User = {
           id,
           ...updateUserDto,
           isDeleted: false,

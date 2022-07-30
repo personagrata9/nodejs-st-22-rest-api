@@ -12,7 +12,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { IUser } from './interfaces/user.interface';
+import { User } from './interfaces/user.interface';
 import { UsersService } from './services/users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserByIdPipe } from './validation/pipes/user-by-id.pipe';
@@ -25,9 +25,10 @@ export class UsersController {
   @Get()
   async getAutoSuggestUsers(
     @Query() query: any,
-  ): Promise<PaginatedItemsResult<IUser>> {
+  ): Promise<PaginatedItemsResult<User>> {
     const { limit = 10, offset = 0, loginSubstring } = query;
-    return await this.usersService.findAutoSuggestUsers(
+
+    return this.usersService.findAutoSuggestUsers(
       +limit,
       +offset,
       loginSubstring,
@@ -37,14 +38,16 @@ export class UsersController {
   @Get(':id')
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
-  ): Promise<IUser> {
-    return await this.usersService.findOneById(id);
+  ): Promise<User> {
+    return this.usersService.findOneById(id);
   }
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
-      return await this.usersService.create(createUserDto);
+      const newUser: User = await this.usersService.create(createUserDto);
+
+      return newUser;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -54,9 +57,14 @@ export class UsersController {
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<IUser> {
+  ): Promise<User> {
     try {
-      return await this.usersService.update(id, updateUserDto);
+      const updatedUser: User = await this.usersService.update(
+        id,
+        updateUserDto,
+      );
+
+      return updatedUser;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -66,7 +74,7 @@ export class UsersController {
   @HttpCode(204)
   async delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
-  ) {
-    return await this.usersService.delete(id);
+  ): Promise<void> {
+    return this.usersService.delete(id);
   }
 }

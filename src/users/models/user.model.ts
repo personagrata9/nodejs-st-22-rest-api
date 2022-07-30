@@ -1,11 +1,11 @@
+import 'dotenv/config';
 import { Sequelize, DataTypes, Model } from 'sequelize';
-const sequelize = new Sequelize(
-  'postgres://dsmcehjd:4pWEHzBci925PfsoinzTbMQ_lHROzqJR@tyke.db.elephantsql.com/dsmcehjd',
-);
 
-export class User extends Model {}
+const sequelize = new Sequelize(process.env.DB_URL);
 
-User.init(
+export class UserModel extends Model {}
+
+UserModel.init(
   {
     login: {
       type: DataTypes.STRING,

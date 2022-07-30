@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { IUser } from '../interfaces/user.interface';
+import { User } from '../interfaces/user.interface';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UsersRepository } from '../repository/users.repository';
 import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
@@ -15,16 +15,16 @@ export class UsersService {
     limit: number,
     offset: number,
     loginSubstring: string | undefined,
-  ): Promise<PaginatedItemsResult<IUser>> =>
-    await this.usersRepository.findAll(limit, offset, loginSubstring);
+  ): Promise<PaginatedItemsResult<User>> =>
+    this.usersRepository.findAll(limit, offset, loginSubstring);
 
-  findOneById = async (id: string): Promise<IUser> =>
-    await this.usersRepository.findOneById(id);
+  findOneById = async (id: string): Promise<User> =>
+    this.usersRepository.findOneById(id);
 
-  create = async (createUserDto: CreateUserDto): Promise<IUser> =>
-    await this.usersRepository.create(createUserDto);
+  create = async (createUserDto: CreateUserDto): Promise<User> =>
+    this.usersRepository.create(createUserDto);
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> =>
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<User> =>
     this.usersRepository.update(id, updateUserDto);
 
   delete = async (id: string): Promise<void> => this.usersRepository.delete(id);

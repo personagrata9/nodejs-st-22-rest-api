@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { User } from '../models/user.model';
-import { IUser } from '../interfaces/user.interface';
+import { UserModel } from '../models/user.model';
+import { User } from '../interfaces/user.interface';
 import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
 import { Op } from 'sequelize';
 
 @Injectable()
 export class SequelizeUsersRepository implements UsersRepository {
-  private users: IUser[] = [];
+  private users: User[] = [];
 
-  findOneById = async (id: string): Promise<IUser | undefined> => {
+  findOneById = async (id: string): Promise<User | undefined> => {
     try {
-      const user = await User.findOne({ where: { id, isDeleted: false } });
+      const user = await UserModel.findOne({ where: { id, isDeleted: false } });
 
       return user.toJSON();
     } catch {}
@@ -23,12 +23,12 @@ export class SequelizeUsersRepository implements UsersRepository {
     limit: number,
     offset: number,
     loginSubstring?: string,
-  ): Promise<PaginatedItemsResult<IUser>> => {
+  ): Promise<PaginatedItemsResult<User>> => {
     const whereOptions = loginSubstring
       ? { isDeleted: false, login: { [Op.iLike]: `%${loginSubstring}%` } }
       : { isDeleted: false };
 
-    const { count, rows } = await User.findAndCountAll({
+    const { count, rows } = await UserModel.findAndCountAll({
       where: whereOptions,
       limit,
       offset,
@@ -43,9 +43,9 @@ export class SequelizeUsersRepository implements UsersRepository {
     };
   };
 
-  create = async (createUserDto: CreateUserDto): Promise<IUser> => {
+  create = async (createUserDto: CreateUserDto): Promise<User> => {
     try {
-      const newUser = await User.create({ ...createUserDto });
+      const newUser = await UserModel.create({ ...createUserDto });
 
       return newUser.toJSON();
     } catch (error) {
@@ -58,9 +58,9 @@ export class SequelizeUsersRepository implements UsersRepository {
     }
   };
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<User> => {
     try {
-      const user = await User.findOne({ where: { id } });
+      const user = await UserModel.findOne({ where: { id } });
       const updatedUser = await user.update({ ...updateUserDto });
       await user.save();
 
@@ -76,7 +76,7 @@ export class SequelizeUsersRepository implements UsersRepository {
   };
 
   delete = async (id: string): Promise<void> => {
-    const user = await User.findOne({ where: { id } });
+    const user = await UserModel.findOne({ where: { id } });
     await user.update({ isDeleted: true });
     await user.save();
   };
