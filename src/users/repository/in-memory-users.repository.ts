@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { User } from '../interfaces/user.interface';
-import { PaginatedItemsResult } from '../../interfaces/paginated-items-result.interface';
+import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4 } from 'uuid';
