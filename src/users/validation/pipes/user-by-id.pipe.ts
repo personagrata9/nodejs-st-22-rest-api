@@ -4,7 +4,7 @@ import {
   NotFoundException,
   Inject,
 } from '@nestjs/common';
-import { User } from '../../interfaces/user.interface';
+import { IUser } from '../../interfaces/user.interface';
 import { UsersRepository } from 'src/users/repository/users.repository';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class UserByIdPipe implements PipeTransform {
   ) {}
 
   async transform(id: string) {
-    const user: User = await this.usersRepository.findOneById(id);
+    const user: IUser = await this.usersRepository.findOneById(id);
 
     if (user) {
       if (user.isDeleted) {

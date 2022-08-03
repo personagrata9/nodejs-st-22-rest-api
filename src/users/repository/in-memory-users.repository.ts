@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { User } from '../interfaces/user.interface';
-import { PaginatedItemsResult } from '../../interfaces/paginated-items-result.interface';
+import { IUser } from '../interfaces/user.interface';
+import { IPaginatedItemsResult } from '../../interfaces/paginated-items-result.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
-  private users: User[] = [];
+  private users: IUser[] = [];
 
-  findOneById = async (id: string): Promise<User | undefined> =>
+  findOneById = async (id: string): Promise<IUser | undefined> =>
     new Promise((resolve) => {
-      const user: User = this.users.find((user) => user.id === id);
+      const user: IUser = this.users.find((user) => user.id === id);
       resolve(user);
     });
 
@@ -20,19 +20,19 @@ export class InMemoryUsersRepository implements UsersRepository {
     limit: number,
     offset: number,
     loginSubstring?: string,
-  ): Promise<PaginatedItemsResult<User>> =>
+  ): Promise<IPaginatedItemsResult<IUser>> =>
     new Promise((resolve) => {
-      const existingUsers: User[] = this.users.filter(
+      const existingUsers: IUser[] = this.users.filter(
         (user) => !user.isDeleted,
       );
 
-      const filteredByLoginSubstringUsers: User[] = loginSubstring
+      const filteredByLoginSubstringUsers: IUser[] = loginSubstring
         ? existingUsers.filter((user) =>
             user.login.toLowerCase().includes(loginSubstring.toLowerCase()),
           )
         : existingUsers;
 
-      const items: User[] = filteredByLoginSubstringUsers
+      const items: IUser[] = filteredByLoginSubstringUsers
         .sort((a, b) => a.login.localeCompare(b.login))
         .slice(offset, limit + offset);
 
@@ -47,7 +47,7 @@ export class InMemoryUsersRepository implements UsersRepository {
   private createUserId = async (): Promise<string> => {
     const id: string = uuidv4();
 
-    const user: User = await this.findOneById(id);
+    const user: IUser = await this.findOneById(id);
     if (user) await this.createUserId();
 
     return id;
@@ -65,7 +65,7 @@ export class InMemoryUsersRepository implements UsersRepository {
       resolve(!usersLogins.includes(login));
     });
 
-  create = async (createUserDto: CreateUserDto): Promise<User> => {
+  create = async (createUserDto: CreateUserDto): Promise<IUser> => {
     const { login } = createUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login);
 
@@ -73,7 +73,7 @@ export class InMemoryUsersRepository implements UsersRepository {
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
-        const newUser: User = {
+        const newUser: IUser = {
           id,
           ...createUserDto,
           isDeleted: false,
@@ -91,13 +91,13 @@ export class InMemoryUsersRepository implements UsersRepository {
     });
   };
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<User> => {
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
     const { login } = updateUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login, id);
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
-        const updatedUser: User = {
+        const updatedUser: IUser = {
           id,
           ...updateUserDto,
           isDeleted: false,
@@ -120,7 +120,7 @@ export class InMemoryUsersRepository implements UsersRepository {
   };
 
   delete = async (id: string): Promise<void> => {
-    const user: User = await this.findOneById(id);
+    const user: IUser = await this.findOneById(id);
 
     return new Promise((resolve) => {
       const userIndex: number = this.users.findIndex((user) => user.id === id);

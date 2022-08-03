@@ -12,8 +12,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './services/users.service';
-import { User } from './interfaces/user.interface';
-import { PaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { IUser } from './interfaces/user.interface';
+import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserByIdPipe } from './validation/pipes/user-by-id.pipe';
@@ -25,7 +25,7 @@ export class UsersController {
   @Get()
   async getAutoSuggestUsers(
     @Query() query: any,
-  ): Promise<PaginatedItemsResult<User>> {
+  ): Promise<IPaginatedItemsResult<IUser>> {
     const { limit = 10, offset = 0, loginSubstring } = query;
 
     return this.usersService.findAutoSuggestUsers(
@@ -38,14 +38,14 @@ export class UsersController {
   @Get(':id')
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
-  ): Promise<User> {
+  ): Promise<IUser> {
     return this.usersService.findOneById(id);
   }
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
     try {
-      const newUser: User = await this.usersService.create(createUserDto);
+      const newUser: IUser = await this.usersService.create(createUserDto);
 
       return newUser;
     } catch (error) {
@@ -57,9 +57,9 @@ export class UsersController {
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  ): Promise<IUser> {
     try {
-      const updatedUser: User = await this.usersService.update(
+      const updatedUser: IUser = await this.usersService.update(
         id,
         updateUserDto,
       );

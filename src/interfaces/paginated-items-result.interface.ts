@@ -1,4 +1,4 @@
-export interface PaginatedItemsResult<T> {
+export interface IPaginatedItemsResult<T> {
   items: T[];
   limit: number;
   offset: number;
