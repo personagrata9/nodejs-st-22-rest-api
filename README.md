@@ -20,7 +20,7 @@ or
 npm i
 ```
 
-Step 3. Copy and rename `env.example` to `.env`.
+Step 3. Copy and rename `env.example` to `.env`. Set up your credentials.
 
 Step 4. Run the service using one of the options below:
 

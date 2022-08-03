@@ -1,32 +1,16 @@
-import 'dotenv/config';
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import { Column, Model, Table } from 'sequelize-typescript';
 
-const sequelize = new Sequelize(process.env.DB_URL);
+@Table
+export class User extends Model {
+  @Column
+  login: string;
 
-export class UserModel extends Model {}
+  @Column
+  password: string;
 
-UserModel.init(
-  {
-    login: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    age: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    isDeleted: {
-      type: DataTypes.BOOLEAN,
-    },
-  },
-  {
-    sequelize,
-    timestamps: false,
-    modelName: 'User',
-  },
-);
+  @Column
+  age: number;
+
+  @Column({ defaultValue: false })
+  isDeleted: boolean;
+}

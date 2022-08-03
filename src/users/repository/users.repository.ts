@@ -1,4 +1,4 @@
-import { Repository } from 'src/interfaces/repository.interface';
-import { User } from '../interfaces/user.interface';
+import { IRepository } from 'src/interfaces/repository.interface';
+import { IUser } from '../interfaces/user.interface';
 
-export type UsersRepository = Repository<User>;
+export type UsersRepository = IRepository<IUser>;
