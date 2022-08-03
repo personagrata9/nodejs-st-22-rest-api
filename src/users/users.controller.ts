@@ -11,9 +11,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { IUser } from './models/user.model';
 import { UsersService } from './services/users.service';
+import { IUser } from './interfaces/user.interface';
+import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserByIdPipe } from './validation/pipes/user-by-id.pipe';
 
@@ -22,30 +23,34 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async getAutoSuggestUsers(@Query() query: any) {
+  async getAutoSuggestUsers(
+    @Query() query: any,
+  ): Promise<IPaginatedItemsResult<IUser>> {
     const { limit = 10, offset = 0, loginSubstring } = query;
-    return {
-      items: await this.usersService.findAutoSuggestUsers(
-        +limit,
-        +offset,
-        loginSubstring,
-      ),
-      limit: +limit,
-      offset: +offset,
-      count: await this.usersService.count(),
-    };
+
+    return this.usersService.findAutoSuggestUsers(
+      +limit,
+      +offset,
+      loginSubstring,
+    );
   }
 
   @Get(':id')
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
   ): Promise<IUser> {
-    return await this.usersService.findOneById(id);
+    return this.usersService.findOneById(id);
   }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
-    return await this.usersService.create(createUserDto);
+    try {
+      const newUser: IUser = await this.usersService.create(createUserDto);
+
+      return newUser;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   @Put(':id')
@@ -54,7 +59,12 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
     try {
-      return await this.usersService.update(id, updateUserDto);
+      const updatedUser: IUser = await this.usersService.update(
+        id,
+        updateUserDto,
+      );
+
+      return updatedUser;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -64,7 +74,7 @@ export class UsersController {
   @HttpCode(204)
   async delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
-  ) {
-    return await this.usersService.delete(id);
+  ): Promise<void> {
+    return this.usersService.delete(id);
   }
 }

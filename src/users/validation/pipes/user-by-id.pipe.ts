@@ -1,18 +1,29 @@
-import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
-import { usersDB } from 'src/db/users.db';
-import { IUser } from 'src/users/models/user.model';
+import {
+  PipeTransform,
+  Injectable,
+  NotFoundException,
+  Inject,
+} from '@nestjs/common';
+import { IUser } from '../../interfaces/user.interface';
+import { UsersRepository } from 'src/users/repository/users.repository';
 
 @Injectable()
 export class UserByIdPipe implements PipeTransform {
-  transform(value: string) {
-    const user: IUser = usersDB.find(
-      (user) => user.id === value && !user.isDeleted,
-    );
+  constructor(
+    @Inject('UsersRepository') private usersRepository: UsersRepository,
+  ) {}
+
+  async transform(id: string) {
+    const user: IUser = await this.usersRepository.findOneById(id);
 
     if (user) {
-      return value;
+      if (user.isDeleted) {
+        throw new NotFoundException(`user with id ${id} is deleted`);
+      }
+
+      return id;
     } else {
-      throw new NotFoundException(`user with id ${value} not found`);
+      throw new NotFoundException(`user with id ${id} doesn't exist`);
     }
   }
 }

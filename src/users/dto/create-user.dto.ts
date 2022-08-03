@@ -8,10 +8,8 @@ import {
 } from 'class-validator';
 import { HasLetter } from '../validation/decorators/has-letter.decorator';
 import { HasNumber } from '../validation/decorators/has-number.decorator';
-import { IsLoginAlreadyExist } from '../validation/decorators/is-login-already-exist.decorator';
 
 export class CreateUserDto {
-  @IsLoginAlreadyExist()
   @IsString()
   @IsNotEmpty()
   @IsDefined({ message: '$property is required' })
