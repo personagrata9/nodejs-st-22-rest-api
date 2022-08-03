@@ -62,7 +62,6 @@ export class SequelizeUsersRepository implements UsersRepository {
     try {
       const user: UserModel = await UserModel.findOne({ where: { id } });
       const updatedUser: UserModel = await user.update({ ...updateUserDto });
-      await user.save();
 
       return updatedUser.toJSON();
     } catch (error) {
