@@ -1,11 +1,34 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsToMany,
+  Column,
+  DataType,
+  Model,
+  Sequelize,
+  Table,
+} from 'sequelize-typescript';
+import { User } from 'src/users/models/user.model';
 import { Permission, PermissionType } from '../interfaces/group.interface';
+import { UserGroup } from './user-group.model.';
 
-@Table
+@Table({ tableName: 'Groups' })
 export class Group extends Model {
-  @Column
+  @Column({
+    type: DataType.STRING,
+    unique: true,
+    primaryKey: true,
+    defaultValue: Sequelize.literal('uuid_generate_v4()'),
+  })
+  id: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
-  @Column(DataType.ARRAY(DataType.ENUM(...Object.values(Permission))))
+  @Column({
+    type: DataType.ARRAY(DataType.ENUM(...Object.values(Permission))),
+    allowNull: false,
+  })
   permissions: PermissionType[];
+
+  @BelongsToMany(() => User, () => UserGroup)
+  groups: User[];
 }
