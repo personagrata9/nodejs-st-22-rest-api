@@ -71,25 +71,17 @@ export class SequelizeGroupsRepository implements GroupsRepository {
     groupId: string,
     userIds: string[],
   ): Promise<void> => {
-    try {
-      await this.sequelize.transaction(async (t) => {
-        const group: Group = await this.groupModel.findOne({
-          where: { id: groupId },
-          transaction: t,
-        });
-
-        await Promise.all(
-          userIds.map((userId) =>
-            group.$add('users', userId, { transaction: t }),
-          ),
-        );
+    await this.sequelize.transaction(async (t) => {
+      const group: Group = await this.groupModel.findOne({
+        where: { id: groupId },
+        transaction: t,
       });
-    } catch (error) {
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error(error.parent.detail);
-      }
 
-      throw error;
-    }
+      await Promise.all(
+        userIds.map((userId) =>
+          group.$add('users', userId, { transaction: t }),
+        ),
+      );
+    });
   };
 }

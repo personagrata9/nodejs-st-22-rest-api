@@ -18,6 +18,7 @@ import { UpdateGroupDto } from '../dto/update-group.dto';
 import { AddUsersToGroupDto } from '../dto/add-users-to-group.dto';
 import { GroupsService } from '../services/groups.service';
 import { GroupByIdPipe } from '../validation/group-by-id.pipe';
+import { UsersArrayByIdPipe } from 'src/users/validation/pipes/users-by-id-array.pipe';
 
 @Controller('v1/groups')
 export class GroupsController {
@@ -52,10 +53,11 @@ export class GroupsController {
   async addUsersToGroup(
     @Param('groupId', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
     groupId: string,
-    @Body() addUsersToGroupDto: AddUsersToGroupDto,
+    @Body(UsersArrayByIdPipe) addUsersToGroupDto: AddUsersToGroupDto,
   ): Promise<void> {
     try {
       const { userIds } = addUsersToGroupDto;
+
       await this.groupsService.addUsersToGroup(groupId, userIds);
     } catch (error) {
       throw new BadRequestException(error.message);

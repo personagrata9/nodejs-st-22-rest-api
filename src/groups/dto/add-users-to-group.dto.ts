@@ -3,9 +3,11 @@ import {
   IsArray,
   ArrayNotEmpty,
   ArrayUnique,
+  IsUUID,
 } from 'class-validator';
 
 export class AddUsersToGroupDto {
+  @IsUUID('4', { each: true })
   @ArrayUnique()
   @ArrayNotEmpty()
   @IsArray()
