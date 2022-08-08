@@ -11,10 +11,11 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { IGroup } from '../interfaces/group.interface';
 import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
-import { IGroup } from '../interfaces/group.interface';
+import { AddUsersToGroupDto } from '../dto/add-users-to-group.dto';
 import { GroupsService } from '../services/groups.service';
 import { GroupByIdPipe } from '../validation/group-by-id.pipe';
 
@@ -42,6 +43,20 @@ export class GroupsController {
       const newGroup: IGroup = await this.groupsService.create(createGroupDto);
 
       return newGroup;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post(':groupId')
+  async addUsersToGroup(
+    @Param('groupId', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
+    groupId: string,
+    @Body() addUsersToGroupDto: AddUsersToGroupDto,
+  ): Promise<void> {
+    try {
+      const { userIds } = addUsersToGroupDto;
+      await this.groupsService.addUsersToGroup(groupId, userIds);
     } catch (error) {
       throw new BadRequestException(error.message);
     }

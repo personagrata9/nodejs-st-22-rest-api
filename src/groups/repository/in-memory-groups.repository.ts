@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { inMemoruDB } from 'src/database/in-memory-db/in-memory-db';
 import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { IUser } from 'src/users/interfaces/user.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
@@ -8,7 +10,11 @@ import { GroupsRepository } from './groups.repository';
 
 @Injectable()
 export class InMemoryGroupsRepository implements GroupsRepository {
-  private groups: IGroup[] = [];
+  private groups: IGroup[] = inMemoruDB.groups;
+
+  private users: IUser[] = inMemoruDB.users;
+
+  private userGroup: string[][] = inMemoruDB.userGroup;
 
   findOneById = async (id: string): Promise<IGroup | undefined> =>
     new Promise((resolve) => {
@@ -80,7 +86,45 @@ export class InMemoryGroupsRepository implements GroupsRepository {
         (group) => group.id === id,
       );
       this.groups.splice(groupIndex, 1);
+      this.deleteRelationsFromUserGroup(id);
 
       resolve();
     });
+
+  private addOneUserToGroup = async (
+    groupId: string,
+    userId: string,
+  ): Promise<string[] | void> =>
+    new Promise((resolve, reject) => {
+      const user: IUser = this.users.find((user) => user.id === userId);
+
+      const item: string[] = this.userGroup.find(
+        (item) => item[0] === userId && item[1] === groupId,
+      );
+
+      if (!user) {
+        reject(new Error(`user with id ${userId} doesn't exist`));
+      } else {
+        if (!item) {
+          resolve([userId, groupId]);
+        }
+        resolve();
+      }
+    });
+
+  private deleteRelationsFromUserGroup = (groupId: string) => {
+    this.userGroup = this.userGroup.filter((item) => item[1] !== groupId);
+  };
+
+  addUsersToGroup = async (
+    groupId: string,
+    userIds: string[],
+  ): Promise<void> => {
+    const results = await Promise.all(
+      userIds.map((userId) => this.addOneUserToGroup(groupId, userId)),
+    );
+    results.forEach((result) => {
+      if (result) this.userGroup.push(result);
+    });
+  };
 }
