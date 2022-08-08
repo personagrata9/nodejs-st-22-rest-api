@@ -56,8 +56,6 @@ export class SequelizeUsersRepository implements UsersRepository {
         isDeleted: false,
       });
 
-      console.log(newUser);
-
       return newUser.toJSON();
     } catch (error) {
       const message: string =
@@ -88,6 +86,5 @@ export class SequelizeUsersRepository implements UsersRepository {
   delete = async (id: string): Promise<void> => {
     const user: User = await this.userModel.findOne({ where: { id } });
     await user.update({ isDeleted: true });
-    await user.save();
   };
 }

@@ -5,7 +5,7 @@ export interface IRepository<T> {
   findAll(
     limit: number,
     offset: number,
-    filter: string,
+    filter?: string,
   ): Promise<IPaginatedItemsResult<T>>;
   create(entityDto: any): Promise<T>;
   update(id: string, entityDto: any): Promise<T>;
