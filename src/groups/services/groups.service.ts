@@ -30,4 +30,11 @@ export class GroupsService {
 
   delete = async (id: string): Promise<void> =>
     this.groupsRepository.delete(id);
+
+  addUsersToGroup = async (
+    groupId: string,
+    userIds: string[],
+  ): Promise<void> => {
+    return this.groupsRepository.addUsersToGroup(groupId, userIds);
+  };
 }

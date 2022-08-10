@@ -20,7 +20,7 @@ export class Group extends Model {
   })
   id: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
   name: string;
 
   @Column({

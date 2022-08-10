@@ -5,10 +5,11 @@ import { IPaginatedItemsResult } from '../../interfaces/paginated-items-result.i
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { inMemoruDB } from 'src/database/in-memory-db/in-memory-db';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
-  private users: IUser[] = [];
+  private users: IUser[] = inMemoruDB.users;
 
   findOneById = async (id: string): Promise<IUser | undefined> =>
     new Promise((resolve) => {
