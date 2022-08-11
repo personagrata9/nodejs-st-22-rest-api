@@ -11,7 +11,7 @@ export class LoggerMiddleware implements NestMiddleware {
       `\x1b[36m${req.url}\x1b[0m`,
     );
 
-    console.group();
+    console.group('ARGUMENTS');
     console.log('\x1b[33m%s\x1b[0m', req);
     console.log('\x1b[32m%s\x1b[0m', res);
     console.groupEnd();
