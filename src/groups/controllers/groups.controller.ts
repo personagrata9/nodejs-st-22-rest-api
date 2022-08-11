@@ -12,7 +12,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { IGroup } from '../interfaces/group.interface';
-import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
 import { AddUsersToGroupDto } from '../dto/add-users-to-group.dto';

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { inMemoruDB } from 'src/database/in-memory-db/in-memory-db';
-import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
