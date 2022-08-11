@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
+import { NotUniqueError } from 'src/common/errors/not-unique.error';
 import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
@@ -45,41 +46,58 @@ export class SequelizeGroupsRepository implements GroupsRepository {
   };
 
   create = async (createGroupDto: CreateGroupDto): Promise<IGroup> => {
-    const newGroup: Group = await this.groupModel.create({
-      ...createGroupDto,
-    });
+    try {
+      const newGroup: Group = await this.groupModel.create({
+        ...createGroupDto,
+        isDeleted: false,
+      });
 
-    return newGroup.toJSON();
+      return newGroup.toJSON();
+    } catch (error) {
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new NotUniqueError('group', 'name', createGroupDto.name);
+      } else {
+        throw error;
+      }
+    }
   };
 
   update = async (
-    id: string,
+    group: IGroup,
     updateGroupDto: UpdateGroupDto,
   ): Promise<IGroup> => {
-    const group: Group = await this.groupModel.findOne({ where: { id } });
-    const updatedGroup: Group = await group.update({ ...updateGroupDto });
+    try {
+      const updatedGroup: Group = (
+        await this.groupModel.update(updateGroupDto, {
+          where: { id: group.id },
+          returning: true,
+        })
+      )[1][0];
 
-    return updatedGroup.toJSON();
+      return updatedGroup.toJSON();
+    } catch (error) {
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new NotUniqueError('group', 'name', updateGroupDto.name);
+      } else {
+        throw error;
+      }
+    }
   };
 
-  delete = async (id: string): Promise<void> => {
-    const group: Group = await this.groupModel.findOne({ where: { id } });
-    await group.destroy();
+  delete = async (group: IGroup): Promise<void> => {
+    await this.groupModel.destroy({ where: { id: group.id } });
   };
 
-  addUsersToGroup = async (
-    groupId: string,
-    userIds: string[],
-  ): Promise<void> => {
+  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> => {
     await this.sequelize.transaction(async (t) => {
-      const group: Group = await this.groupModel.findOne({
-        where: { id: groupId },
+      const groupModel: Group = await this.groupModel.findOne({
+        where: { id: group.id },
         transaction: t,
       });
 
       await Promise.all(
         userIds.map((userId) =>
-          group.$add('users', userId, { transaction: t }),
+          groupModel.$add('users', userId, { transaction: t }),
         ),
       );
     });

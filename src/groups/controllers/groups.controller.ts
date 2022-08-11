@@ -19,6 +19,7 @@ import { AddUsersToGroupDto } from '../dto/add-users-to-group.dto';
 import { GroupsService } from '../services/groups.service';
 import { GroupByIdPipe } from '../validation/group-by-id.pipe';
 import { UsersArrayByIdPipe } from 'src/users/validation/pipes/users-by-id-array.pipe';
+import { NotUniqueError } from 'src/common/errors/not-unique.error';
 
 @Controller('v1/groups')
 export class GroupsController {
@@ -33,9 +34,10 @@ export class GroupsController {
 
   @Get(':id')
   async getById(
-    @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
+    group: IGroup,
   ): Promise<IGroup> {
-    return this.groupsService.findOneById(id);
+    return group;
   }
 
   @Post()
@@ -45,47 +47,49 @@ export class GroupsController {
 
       return newGroup;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      if (error instanceof NotUniqueError) {
+        throw new BadRequestException(error.message);
+      }
     }
   }
 
   @Post(':groupId')
   async addUsersToGroup(
     @Param('groupId', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
-    groupId: string,
+    group: IGroup,
     @Body(UsersArrayByIdPipe) addUsersToGroupDto: AddUsersToGroupDto,
   ): Promise<void> {
-    try {
-      const { userIds } = addUsersToGroupDto;
+    const { userIds } = addUsersToGroupDto;
 
-      await this.groupsService.addUsersToGroup(groupId, userIds);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    await this.groupsService.addUsersToGroup(group, userIds);
   }
 
   @Put(':id')
   async update(
-    @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
+    group: IGroup,
     @Body() updateGroupDto: UpdateGroupDto,
   ): Promise<IGroup> {
     try {
       const updatedGroup: IGroup = await this.groupsService.update(
-        id,
+        group,
         updateGroupDto,
       );
 
       return updatedGroup;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      if (error instanceof NotUniqueError) {
+        throw new BadRequestException(error.message);
+      }
     }
   }
 
   @Delete(':id')
   @HttpCode(204)
   async delete(
-    @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
+    group: IGroup,
   ): Promise<void> {
-    return this.groupsService.delete(id);
+    return this.groupsService.delete(group);
   }
 }

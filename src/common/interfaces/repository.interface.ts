@@ -1,13 +1,13 @@
 import { IPaginatedItemsResult } from './paginated-items-result.interface';
 
 export interface IRepository<T> {
-  findOneById(id: string): Promise<T | undefined>;
+  findOneById(id: string): Promise<T | null>;
   findAll(
     limit: number,
     offset: number,
     filter?: string,
   ): Promise<IPaginatedItemsResult<T>>;
   create(entityDto: any): Promise<T>;
-  update(id: string, entityDto: any): Promise<T>;
-  delete(id: string): Promise<void>;
+  update(entity: T, entityDto: any): Promise<T>;
+  delete(entity: T): Promise<void>;
 }

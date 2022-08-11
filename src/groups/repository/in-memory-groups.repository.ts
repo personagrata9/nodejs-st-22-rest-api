@@ -6,6 +6,7 @@ import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
 import { IGroup } from '../interfaces/group.interface';
 import { GroupsRepository } from './groups.repository';
+import { NotUniqueError } from 'src/common/errors/not-unique.error';
 
 @Injectable()
 export class InMemoryGroupsRepository implements GroupsRepository {
@@ -45,46 +46,74 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     return id;
   };
 
+  private ckeckNameUnique = async (
+    name: string,
+    id?: string,
+  ): Promise<boolean> =>
+    new Promise((resolve) => {
+      const groupsNames: string[] = this.groups
+        .filter((group) => group.id !== id)
+        .map((group) => group.name);
+
+      resolve(!groupsNames.includes(name));
+    });
+
   create = async (createGroupDto: CreateGroupDto): Promise<IGroup> => {
+    const { name } = createGroupDto;
+    const isNameUnique: boolean = await this.ckeckNameUnique(name);
+
     const id: string = await this.createGroupId();
 
-    return new Promise((resolve) => {
-      const newGroup: IGroup = {
-        id,
-        ...createGroupDto,
-      };
-      this.groups.push(newGroup);
+    return new Promise((resolve, reject) => {
+      if (isNameUnique) {
+        const newGroup: IGroup = {
+          id,
+          ...createGroupDto,
+        };
+        this.groups.push(newGroup);
 
-      resolve(newGroup);
+        resolve(newGroup);
+      } else {
+        reject(new NotUniqueError('group', 'name', name));
+      }
     });
   };
 
   update = async (
-    id: string,
+    group: IGroup,
     updateGroupDto: UpdateGroupDto,
-  ): Promise<IGroup> =>
-    new Promise((resolve) => {
-      const updatedGroup: IGroup = {
-        id,
-        ...updateGroupDto,
-      };
+  ): Promise<IGroup> => {
+    const { id } = group;
+    const { name } = updateGroupDto;
+    const isNameUnique: boolean = await this.ckeckNameUnique(name, id);
 
-      const groupIndex: number = this.groups.findIndex(
-        (group) => group.id === id,
-      );
-      this.groups.splice(groupIndex, 1, updatedGroup);
+    return new Promise((resolve, reject) => {
+      if (isNameUnique) {
+        const updatedGroup: IGroup = {
+          id,
+          ...updateGroupDto,
+        };
 
-      resolve(updatedGroup);
+        const groupIndex: number = this.groups.findIndex(
+          (group) => group.id === id,
+        );
+        this.groups.splice(groupIndex, 1, updatedGroup);
+
+        resolve(updatedGroup);
+      } else {
+        reject(new NotUniqueError('group', 'name', name));
+      }
     });
+  };
 
-  delete = async (id: string): Promise<void> =>
+  delete = async (group: IGroup): Promise<void> =>
     new Promise((resolve) => {
       const groupIndex: number = this.groups.findIndex(
-        (group) => group.id === id,
+        (group) => group.id === group.id,
       );
       this.groups.splice(groupIndex, 1);
 
-      this.deleteRelationsFromUserGroup(id);
+      this.deleteRelationsFromUserGroup(group.id);
 
       resolve();
     });
@@ -109,12 +138,9 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     this.userGroup = this.userGroup.filter((item) => item[1] !== groupId);
   };
 
-  addUsersToGroup = async (
-    groupId: string,
-    userIds: string[],
-  ): Promise<void> => {
+  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> => {
     const results = await Promise.all(
-      userIds.map((userId) => this.addOneUserToGroup(groupId, userId)),
+      userIds.map((userId) => this.addOneUserToGroup(group.id, userId)),
     );
 
     results.forEach((result) => {

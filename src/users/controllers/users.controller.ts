@@ -17,6 +17,7 @@ import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-res
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserByIdPipe } from '../validation/pipes/user-by-id.pipe';
+import { NotUniqueError } from 'src/common/errors/not-unique.error';
 
 @Controller('v1/users')
 export class UsersController {
@@ -37,9 +38,10 @@ export class UsersController {
 
   @Get(':id')
   async getById(
-    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe)
+    user: IUser,
   ): Promise<IUser> {
-    return this.usersService.findOneById(id);
+    return user;
   }
 
   @Post()
@@ -49,32 +51,37 @@ export class UsersController {
 
       return newUser;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      if (error instanceof NotUniqueError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
     }
   }
 
   @Put(':id')
   async update(
-    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
     try {
       const updatedUser: IUser = await this.usersService.update(
-        id,
+        user,
         updateUserDto,
       );
 
       return updatedUser;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      if (error instanceof NotUniqueError) {
+        throw new BadRequestException(error.message);
+      }
     }
   }
 
   @Delete(':id')
   @HttpCode(204)
   async delete(
-    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
   ): Promise<void> {
-    return this.usersService.delete(id);
+    return this.usersService.delete(user);
   }
 }
