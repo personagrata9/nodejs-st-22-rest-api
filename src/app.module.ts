@@ -1,8 +1,11 @@
 import 'dotenv/config';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from './users/users.module';
 import { GroupsModule } from './groups/groups.module';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { GroupsController } from './groups/controllers/groups.controller';
+import { UsersController } from './users/controllers/users.controller';
 
 @Module({
   imports: [
@@ -23,4 +26,10 @@ import { GroupsModule } from './groups/groups.module';
     }),
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes(UsersController, GroupsController);
+  }
+}
