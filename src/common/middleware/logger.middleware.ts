@@ -1,5 +1,6 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { logArguments } from '../utils/log-arguments';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -8,10 +9,7 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     this.logger.log(`METHOD ${req.method} PATH ${req.url}`);
 
-    console.group('ARGUMENTS');
-    console.log('\x1b[33m%s\x1b[0m', req);
-    console.log('\x1b[32m%s\x1b[0m', res);
-    console.groupEnd();
+    logArguments(req, res);
 
     next();
   }

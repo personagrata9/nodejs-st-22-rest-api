@@ -10,33 +10,38 @@ import {
   Post,
   Put,
   Query,
+  UseFilters,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { IUser } from '../interfaces/user.interface';
 import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { QueryDto } from 'src/common/dto/query.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserByIdPipe } from '../validation/pipes/user-by-id.pipe';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
+import { ErrorFilter } from 'src/common/filters/error.filter';
 
 @Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @UseFilters(new ErrorFilter(UsersController.name, 'getAutoSuggestUsers'))
   async getAutoSuggestUsers(
-    @Query() query: any,
+    @Query() query: QueryDto,
   ): Promise<IPaginatedItemsResult<IUser>> {
     const { limit = 10, offset = 0, loginSubstring } = query;
 
     return this.usersService.findAutoSuggestUsers(
-      +limit,
-      +offset,
+      limit,
+      offset,
       loginSubstring,
     );
   }
 
   @Get(':id')
+  @UseFilters(new ErrorFilter(UsersController.name, 'getById'))
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe)
     user: IUser,
@@ -45,6 +50,7 @@ export class UsersController {
   }
 
   @Post()
+  @UseFilters(new ErrorFilter(UsersController.name, 'create'))
   async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
     try {
       const newUser: IUser = await this.usersService.create(createUserDto);
@@ -59,6 +65,7 @@ export class UsersController {
   }
 
   @Put(':id')
+  @UseFilters(new ErrorFilter(UsersController.name, 'update'))
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
     @Body() updateUserDto: UpdateUserDto,
@@ -78,6 +85,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseFilters(new ErrorFilter(UsersController.name, 'delete'))
   @HttpCode(204)
   async delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
