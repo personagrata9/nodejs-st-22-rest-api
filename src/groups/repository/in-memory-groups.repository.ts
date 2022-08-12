@@ -14,10 +14,10 @@ export class InMemoryGroupsRepository implements GroupsRepository {
 
   private userGroup: string[][] = inMemoruDB.userGroup;
 
-  findOneById = async (id: string): Promise<IGroup | undefined> =>
+  findOneById = async (id: string): Promise<IGroup | null> =>
     new Promise((resolve) => {
       const group: IGroup = this.groups.find((group) => group.id === id);
-      resolve(group);
+      resolve(group || null);
     });
 
   findAll = async (
@@ -123,15 +123,13 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     userId: string,
   ): Promise<string[] | void> =>
     new Promise((resolve) => {
-      const item: string[] = this.userGroup.find(
+      const existingItem: string[] = this.userGroup.find(
         (item) => item[0] === userId && item[1] === groupId,
       );
 
-      if (!item) {
-        resolve([userId, groupId]);
-      } else {
-        resolve();
-      }
+      const itemToAdd = !existingItem ? [userId, groupId] : null;
+
+      resolve(itemToAdd);
     });
 
   private deleteRelationsFromUserGroup = (groupId: string) => {

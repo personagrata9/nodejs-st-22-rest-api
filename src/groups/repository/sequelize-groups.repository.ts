@@ -18,13 +18,11 @@ export class SequelizeGroupsRepository implements GroupsRepository {
   ) {}
 
   findOneById = async (id: string): Promise<IGroup | undefined> => {
-    try {
-      const group: Group = await this.groupModel.findOne({
-        where: { id },
-      });
+    const group: Group = await this.groupModel.findOne({
+      where: { id },
+    });
 
-      return group.toJSON();
-    } catch {}
+    return group ? group.toJSON() : null;
   };
 
   findAll = async (

@@ -31,7 +31,6 @@ export class GroupsService {
   delete = async (group: IGroup): Promise<void> =>
     this.groupsRepository.delete(group);
 
-  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> => {
-    return this.groupsRepository.addUsersToGroup(group, userIds);
-  };
+  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> =>
+    this.groupsRepository.addUsersToGroup(group, userIds);
 }
