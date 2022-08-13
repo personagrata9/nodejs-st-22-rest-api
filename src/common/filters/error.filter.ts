@@ -69,6 +69,6 @@ export class ErrorFilter implements ExceptionFilter {
 
     this.logger.error(`${statusCode} ${error}: ${errorMessage}`);
 
-    logArguments(req, res);
+    logArguments(this.logger, req, res);
   };
 }
