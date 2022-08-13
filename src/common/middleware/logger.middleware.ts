@@ -1,10 +1,12 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import 'dotenv/config';
+import { Injectable, LogLevel, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { MainLogger } from '../loggers/main-logger.service';
 import { logArguments } from '../utils/log-arguments';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private readonly logger: Logger = new Logger();
+  constructor(private logger: MainLogger) {}
 
   use(req: Request, res: Response, next: NextFunction) {
     res.on('finish', () => {
