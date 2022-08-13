@@ -23,6 +23,7 @@ import { UsersController } from './users/controllers/users.controller';
       },
       autoLoadModels: true,
       synchronize: true,
+      logging: false,
     }),
   ],
 })
