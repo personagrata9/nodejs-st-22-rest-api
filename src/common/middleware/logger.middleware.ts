@@ -1,15 +1,15 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import 'dotenv/config';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { logArguments } from '../utils/log-arguments';
+import { logger } from '../loggers/winston.logger';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private readonly logger: Logger = new Logger();
-
   use(req: Request, res: Response, next: NextFunction) {
     res.on('finish', () => {
-      this.logger.log(`METHOD ${req.method} PATH ${req.url}`);
-      logArguments(this.logger, req, res);
+      logger.info(`METHOD ${req.method} PATH ${req.url}`);
+      logArguments(logger, req, res);
     });
 
     next();
