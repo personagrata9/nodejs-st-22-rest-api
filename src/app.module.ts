@@ -6,7 +6,6 @@ import { GroupsModule } from './groups/groups.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { GroupsController } from './groups/controllers/groups.controller';
 import { UsersController } from './users/controllers/users.controller';
-import { LoggerModule } from './common/loggers/logger.module';
 
 @Module({
   imports: [
@@ -26,7 +25,6 @@ import { LoggerModule } from './common/loggers/logger.module';
       synchronize: true,
       logging: false,
     }),
-    LoggerModule,
   ],
 })
 export class AppModule implements NestModule {
