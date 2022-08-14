@@ -3,14 +3,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { logger } from './common/loggers/winston.logger';
+import { ErrorFilter } from './common/filters/error.filter';
 
 process.on('uncaughtException', (err, origin) => {
-  logger.error(`Caught exception: ${err}\n` + `Exception origin: ${origin}`);
+  logger.error(`Caught exception: ${err}\nException origin: ${origin}`);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on('unhandledRejection', (reason) => {
+  logger.error(`Unhandled rejection, reason: ${reason}`);
   process.exit(1);
 });
 
@@ -24,6 +25,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  app.useGlobalFilters(new ErrorFilter('Application'));
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

@@ -2,16 +2,12 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  Logger,
   ExceptionFilter,
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { GroupsController } from 'src/groups/controllers/groups.controller';
-import { UsersController } from 'src/users/controllers/users.controller';
+import { logger } from '../loggers/winston.logger';
 import { logArguments } from '../utils/log-arguments';
-
-type MethodNameType = keyof UsersController | keyof GroupsController;
 
 interface ErrorResponse {
   statusCode: number;
@@ -21,15 +17,8 @@ interface ErrorResponse {
 
 @Catch()
 export class ErrorFilter implements ExceptionFilter {
-  private readonly logger: Logger;
-  private readonly context: string;
-
-  constructor(
-    private readonly controllerName: string,
-    private readonly methodName: MethodNameType,
-  ) {
-    this.context = this.controllerName + '.' + this.methodName;
-    this.logger = new Logger(this.context);
+  constructor(private readonly context?: string) {
+    this.context = context;
   }
 
   catch(exception: HttpException | Error, host: ArgumentsHost) {
@@ -67,8 +56,10 @@ export class ErrorFilter implements ExceptionFilter {
     const errorMessage =
       typeof message === 'string' ? message : message.join('; ');
 
-    this.logger.error(`${statusCode} ${error}: ${errorMessage}`);
+    logger.error(`${statusCode} ${error}: ${errorMessage}`, {
+      context: this.context,
+    });
 
-    logArguments(this.logger, req, res);
+    logArguments(logger, req, res);
   };
 }
