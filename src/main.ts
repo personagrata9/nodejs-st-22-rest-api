@@ -5,12 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { logger } from './common/loggers/winston.logger';
 
 process.on('uncaughtException', (err, origin) => {
-  logger.error(`Caught exception: ${err}\n` + `Exception origin: ${origin}`);
+  logger.error(`Caught exception: ${err}\nException origin: ${origin}`);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on('unhandledRejection', (reason) => {
+  logger.error(`Unhandled rejection, reason: ${reason}`);
   process.exit(1);
 });
 
