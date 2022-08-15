@@ -6,7 +6,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { logger } from '../loggers/winston.logger';
+import { Logger } from 'winston';
+import { WinstonLogger } from '../loggers/winston.logger';
 import { logArguments } from '../utils/log-arguments';
 
 interface ErrorResponse {
@@ -17,8 +18,11 @@ interface ErrorResponse {
 
 @Catch()
 export class ErrorFilter implements ExceptionFilter {
+  private logger: Logger;
+
   constructor(private readonly context?: string) {
     this.context = context;
+    this.logger = WinstonLogger.getInstance();
   }
 
   catch(exception: HttpException | Error, host: ArgumentsHost) {
@@ -56,10 +60,10 @@ export class ErrorFilter implements ExceptionFilter {
     const errorMessage =
       typeof message === 'string' ? message : message.join('; ');
 
-    logger.error(`${statusCode} ${error}: ${errorMessage}`, {
+    this.logger.error(`${statusCode} ${error}: ${errorMessage}`, {
       context: this.context,
     });
 
-    logArguments(logger, req, res);
+    logArguments(this.logger, req, res);
   };
 }

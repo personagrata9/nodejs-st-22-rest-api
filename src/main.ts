@@ -2,8 +2,11 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { logger } from './common/loggers/winston.logger';
+import { WinstonLogger } from './common/loggers/winston.logger';
 import { ErrorFilter } from './common/filters/error.filter';
+import { Logger } from 'winston';
+
+const logger: Logger = WinstonLogger.getInstance();
 
 process.on('uncaughtException', (err, origin) => {
   logger.error(`Caught exception: ${err}\nException origin: ${origin}`);
@@ -16,9 +19,7 @@ process.on('unhandledRejection', (reason) => {
 });
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bufferLogs: true,
-  });
+  const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
