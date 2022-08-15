@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { IUser } from '../interfaces/user.interface';
-import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserByIdPipe } from '../validation/pipes/user-by-id.pipe';

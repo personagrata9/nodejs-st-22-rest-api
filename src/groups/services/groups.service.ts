@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupsRepository } from '../repository/groups.repository';
-import { IPaginatedItemsResult } from 'src/interfaces/paginated-items-result.interface';
+import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
 import { IGroup } from '../interfaces/group.interface';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
