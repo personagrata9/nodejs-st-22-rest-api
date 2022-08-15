@@ -24,8 +24,9 @@ export class UsersService {
   create = async (createUserDto: CreateUserDto): Promise<IUser> =>
     this.usersRepository.create(createUserDto);
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> =>
-    this.usersRepository.update(id, updateUserDto);
+  update = async (user: IUser, updateUserDto: UpdateUserDto): Promise<IUser> =>
+    this.usersRepository.update(user, updateUserDto);
 
-  delete = async (id: string): Promise<void> => this.usersRepository.delete(id);
+  delete = async (user: IUser): Promise<void> =>
+    this.usersRepository.delete(user);
 }

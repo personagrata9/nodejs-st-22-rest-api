@@ -17,7 +17,7 @@ export class GroupByIdPipe implements PipeTransform {
     const group: IGroup = await this.groupsRepository.findOneById(id);
 
     if (group) {
-      return id;
+      return group;
     } else {
       throw new NotFoundException(`group with id ${id} doesn't exist`);
     }

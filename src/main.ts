@@ -2,7 +2,17 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { MainLogger } from './common/loggers/main-logger.service';
+import { logger } from './common/loggers/winston.logger';
+
+process.on('uncaughtException', (err, origin) => {
+  logger.error(`Caught exception: ${err}\nException origin: ${origin}`);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.error(`Unhandled rejection, reason: ${reason}`);
+  process.exit(1);
+});
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,10 +25,8 @@ async function bootstrap() {
     }),
   );
 
-  app.useLogger(new MainLogger());
-
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  process.stdout.write(`\n\x1b[36mServer ready at ${port}\x1b[0m\n\n`);
+  logger.info(`Server ready at ${port}`);
 }
 bootstrap();

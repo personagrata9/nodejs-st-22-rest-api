@@ -6,15 +6,16 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { inMemoruDB } from 'src/database/in-memory-db/in-memory-db';
+import { NotUniqueError } from 'src/common/errors/not-unique.error';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
   private users: IUser[] = inMemoruDB.users;
 
-  findOneById = async (id: string): Promise<IUser | undefined> =>
+  findOneById = async (id: string): Promise<IUser | null> =>
     new Promise((resolve) => {
       const user: IUser = this.users.find((user) => user.id === id);
-      resolve(user);
+      resolve(user || null);
     });
 
   findAll = async (
@@ -83,16 +84,16 @@ export class InMemoryUsersRepository implements UsersRepository {
 
         resolve(newUser);
       } else {
-        reject(
-          new Error(
-            `user with login ${login} already exists, please choose another login`,
-          ),
-        );
+        reject(new NotUniqueError('user', 'login', login));
       }
     });
   };
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
+  update = async (
+    user: IUser,
+    updateUserDto: UpdateUserDto,
+  ): Promise<IUser> => {
+    const { id } = user;
     const { login } = updateUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login, id);
 
@@ -111,23 +112,18 @@ export class InMemoryUsersRepository implements UsersRepository {
 
         resolve(updatedUser);
       } else {
-        reject(
-          new Error(
-            `user with login ${login} already exists, please choose another login`,
-          ),
-        );
+        reject(new NotUniqueError('user', 'login', login));
       }
     });
   };
 
-  delete = async (id: string): Promise<void> => {
-    const user: IUser = await this.findOneById(id);
-
-    return new Promise((resolve) => {
-      const userIndex: number = this.users.findIndex((user) => user.id === id);
+  delete = async (user: IUser): Promise<void> =>
+    new Promise((resolve) => {
+      const userIndex: number = this.users.findIndex(
+        (user) => user.id === user.id,
+      );
       this.users.splice(userIndex, 1, { ...user, isDeleted: true });
 
       resolve();
     });
-  };
 }

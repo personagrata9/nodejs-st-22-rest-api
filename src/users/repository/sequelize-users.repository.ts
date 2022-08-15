@@ -7,6 +7,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
+import { NotUniqueError } from 'src/common/errors/not-unique.error';
 
 @Injectable()
 export class SequelizeUsersRepository implements UsersRepository {
@@ -15,14 +16,12 @@ export class SequelizeUsersRepository implements UsersRepository {
     private userModel: typeof User,
   ) {}
 
-  findOneById = async (id: string): Promise<IUser | undefined> => {
-    try {
-      const user: User = await this.userModel.findOne({
-        where: { id },
-      });
+  findOneById = async (id: string): Promise<IUser | null> => {
+    const user: User = await this.userModel.findOne({
+      where: { id },
+    });
 
-      return user.toJSON();
-    } catch {}
+    return user ? user.toJSON() : null;
   };
 
   findAll = async (
@@ -58,33 +57,42 @@ export class SequelizeUsersRepository implements UsersRepository {
 
       return newUser.toJSON();
     } catch (error) {
-      const message: string =
-        error.name === 'SequelizeUniqueConstraintError'
-          ? `user with login ${createUserDto.login} already exists, please choose another login`
-          : error.message;
-
-      throw new Error(message);
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new NotUniqueError('user', 'login', createUserDto.login);
+      } else {
+        throw error;
+      }
     }
   };
 
-  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
+  update = async (
+    user: IUser,
+    updateUserDto: UpdateUserDto,
+  ): Promise<IUser> => {
     try {
-      const user: User = await this.userModel.findOne({ where: { id } });
-      const updatedUser: User = await user.update({ ...updateUserDto });
+      const updatedUser: User = (
+        await this.userModel.update(updateUserDto, {
+          where: { id: user.id },
+          returning: true,
+        })
+      )[1][0];
 
       return updatedUser.toJSON();
     } catch (error) {
-      const message: string =
-        error.name === 'SequelizeUniqueConstraintError'
-          ? `user with login ${updateUserDto.login} already exists, please choose another login`
-          : error.message;
-
-      throw new Error(message);
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new NotUniqueError('user', 'login', updateUserDto.login);
+      } else {
+        throw error;
+      }
     }
   };
 
-  delete = async (id: string): Promise<void> => {
-    const user: User = await this.userModel.findOne({ where: { id } });
-    await user.update({ isDeleted: true });
+  delete = async (user: IUser): Promise<void> => {
+    await this.userModel.update(
+      { isDeleted: true },
+      {
+        where: { id: user.id },
+      },
+    );
   };
 }

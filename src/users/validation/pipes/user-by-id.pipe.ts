@@ -21,7 +21,7 @@ export class UserByIdPipe implements PipeTransform {
         throw new NotFoundException(`user with id ${id} is deleted`);
       }
 
-      return id;
+      return user;
     } else {
       throw new NotFoundException(`user with id ${id} doesn't exist`);
     }
