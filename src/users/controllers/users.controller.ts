@@ -14,6 +14,7 @@ import {
 import { UsersService } from '../services/users.service';
 import { IUser } from '../interfaces/user.interface';
 import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { QueryDto } from 'src/common/dto/query.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserByIdPipe } from '../validation/pipes/user-by-id.pipe';
@@ -25,13 +26,13 @@ export class UsersController {
 
   @Get()
   async getAutoSuggestUsers(
-    @Query() query: any,
+    @Query() query: QueryDto,
   ): Promise<IPaginatedItemsResult<IUser>> {
     const { limit = 10, offset = 0, loginSubstring } = query;
 
     return this.usersService.findAutoSuggestUsers(
-      +limit,
-      +offset,
+      limit,
+      offset,
       loginSubstring,
     );
   }

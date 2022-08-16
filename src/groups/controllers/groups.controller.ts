@@ -11,12 +11,13 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { GroupsService } from '../services/groups.service';
 import { IGroup } from '../interfaces/group.interface';
 import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { QueryDto } from 'src/common/dto/query.dto';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
 import { AddUsersToGroupDto } from '../dto/add-users-to-group.dto';
-import { GroupsService } from '../services/groups.service';
 import { GroupByIdPipe } from '../validation/group-by-id.pipe';
 import { UsersArrayByIdPipe } from 'src/users/validation/pipes/users-by-id-array.pipe';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
@@ -26,10 +27,12 @@ export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
   @Get()
-  async getAll(@Query() query: any): Promise<IPaginatedItemsResult<IGroup>> {
+  async getAll(
+    @Query() query: QueryDto,
+  ): Promise<IPaginatedItemsResult<IGroup>> {
     const { limit = 10, offset = 0 } = query;
 
-    return this.groupsService.findAll(+limit, +offset);
+    return this.groupsService.findAll(limit, offset);
   }
 
   @Get(':id')

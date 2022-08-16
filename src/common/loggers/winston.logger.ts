@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { createLogger, format, transports } from 'winston';
+import { createLogger, format, Logger, transports } from 'winston';
 
 const { combine, colorize, label, timestamp, printf } = format;
 
@@ -19,17 +19,26 @@ const alignColorsAndTime = combine(
   }),
 );
 
-export const logger = createLogger({
-  level: process.env.DEBUG === 'true' ? 'debug' : 'info',
-  transports: [
-    new transports.Console({
-      format: combine(
-        format((info) => {
-          info.level = info.level.toUpperCase();
-          return info;
-        })(),
-        alignColorsAndTime,
-      ),
-    }),
-  ],
-});
+export class WinstonLogger {
+  private static instance: Logger;
+
+  public static getInstance(): Logger {
+    if (!WinstonLogger.instance) {
+      WinstonLogger.instance = createLogger({
+        level: process.env.DEBUG === 'true' ? 'debug' : 'info',
+        transports: [
+          new transports.Console({
+            format: combine(
+              format((info) => {
+                info.level = info.level.toUpperCase();
+                return info;
+              })(),
+              alignColorsAndTime,
+            ),
+          }),
+        ],
+      });
+    }
+    return WinstonLogger.instance;
+  }
+}
