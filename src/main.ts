@@ -3,8 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { WinstonLogger } from './common/loggers/winston.logger';
-import { ErrorFilter } from './common/filters/error.filter';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { Logger } from 'winston';
+import { ExceptionLoggingInterceptor } from './common/interceptors/exception-logging.interceptor';
 
 const logger: Logger = WinstonLogger.getInstance();
 
@@ -26,7 +27,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  app.useGlobalFilters(new ErrorFilter('Application'));
+  app.useGlobalInterceptors(new ExceptionLoggingInterceptor());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

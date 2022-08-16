@@ -10,7 +10,6 @@ import {
   Post,
   Put,
   Query,
-  UseFilters,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { IUser } from '../interfaces/user.interface';
@@ -20,16 +19,12 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserByIdPipe } from '../validation/pipes/user-by-id.pipe';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
-import { ControllerErrorFilter } from 'src/common/filters/controller-error.filter';
 
 @Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseFilters(
-    new ControllerErrorFilter(UsersController.name, 'getAutoSuggestUsers'),
-  )
   async getAutoSuggestUsers(
     @Query() query: QueryDto,
   ): Promise<IPaginatedItemsResult<IUser>> {
@@ -43,7 +38,6 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseFilters(new ControllerErrorFilter(UsersController.name, 'getById'))
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe)
     user: IUser,
@@ -52,7 +46,6 @@ export class UsersController {
   }
 
   @Post()
-  @UseFilters(new ControllerErrorFilter(UsersController.name, 'create'))
   async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
     try {
       const newUser: IUser = await this.usersService.create(createUserDto);
@@ -67,7 +60,6 @@ export class UsersController {
   }
 
   @Put(':id')
-  @UseFilters(new ControllerErrorFilter(UsersController.name, 'update'))
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
     @Body() updateUserDto: UpdateUserDto,
@@ -87,7 +79,6 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseFilters(new ControllerErrorFilter(UsersController.name, 'delete'))
   @HttpCode(204)
   async delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,

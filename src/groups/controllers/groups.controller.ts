@@ -10,7 +10,6 @@ import {
   Post,
   Put,
   Query,
-  UseFilters,
 } from '@nestjs/common';
 import { GroupsService } from '../services/groups.service';
 import { IGroup } from '../interfaces/group.interface';
@@ -22,14 +21,12 @@ import { AddUsersToGroupDto } from '../dto/add-users-to-group.dto';
 import { GroupByIdPipe } from '../validation/group-by-id.pipe';
 import { UsersArrayByIdPipe } from 'src/users/validation/pipes/users-by-id-array.pipe';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
-import { ControllerErrorFilter } from 'src/common/filters/controller-error.filter';
 
 @Controller('v1/groups')
 export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
   @Get()
-  @UseFilters(new ControllerErrorFilter(GroupsController.name, 'getAll'))
   async getAll(
     @Query() query: QueryDto,
   ): Promise<IPaginatedItemsResult<IGroup>> {
@@ -39,7 +36,6 @@ export class GroupsController {
   }
 
   @Get(':id')
-  @UseFilters(new ControllerErrorFilter(GroupsController.name, 'getById'))
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
     group: IGroup,
@@ -48,7 +44,6 @@ export class GroupsController {
   }
 
   @Post()
-  @UseFilters(new ControllerErrorFilter(GroupsController.name, 'create'))
   async create(@Body() createGroupDto: CreateGroupDto): Promise<IGroup> {
     try {
       const newGroup: IGroup = await this.groupsService.create(createGroupDto);
@@ -62,9 +57,6 @@ export class GroupsController {
   }
 
   @Post(':groupId')
-  @UseFilters(
-    new ControllerErrorFilter(GroupsController.name, 'addUsersToGroup'),
-  )
   async addUsersToGroup(
     @Param('groupId', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
     group: IGroup,
@@ -76,7 +68,6 @@ export class GroupsController {
   }
 
   @Put(':id')
-  @UseFilters(new ControllerErrorFilter(GroupsController.name, 'update'))
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
     group: IGroup,
@@ -97,7 +88,6 @@ export class GroupsController {
   }
 
   @Delete(':id')
-  @UseFilters(new ControllerErrorFilter(GroupsController.name, 'delete'))
   @HttpCode(204)
   async delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
