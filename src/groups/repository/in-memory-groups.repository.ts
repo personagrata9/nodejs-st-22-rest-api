@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { inMemoruDB } from 'src/database/in-memory-db/in-memory-db';
+import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
 import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateGroupDto } from '../dto/create-group.dto';
@@ -10,9 +10,8 @@ import { NotUniqueError } from 'src/common/errors/not-unique.error';
 
 @Injectable()
 export class InMemoryGroupsRepository implements GroupsRepository {
-  private groups: IGroup[] = inMemoruDB.groups;
-
-  private userGroup: string[][] = inMemoruDB.userGroup;
+  private groups: IGroup[] = inMemoryDB.groups;
+  private userGroup: string[][] = inMemoryDB.userGroup;
 
   findOneById = async (id: string): Promise<IGroup | null> =>
     new Promise((resolve) => {
@@ -90,7 +89,7 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     return new Promise((resolve, reject) => {
       if (isNameUnique) {
         const updatedGroup: IGroup = {
-          id,
+          ...group,
           ...updateGroupDto,
         };
 

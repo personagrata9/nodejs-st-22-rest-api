@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { IUser } from '../interfaces/user.interface';
@@ -17,13 +17,14 @@ import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-res
 import { QueryDto } from 'src/common/dto/query.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { UserByIdPipe } from '../validation/pipes/user-by-id.pipe';
-import { NotUniqueError } from 'src/common/errors/not-unique.error';
+import { UserByIdPipe } from '../pipes/user-by-id.pipe';
+import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
 @Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAutoSuggestUsers(
     @Query() query: QueryDto,
@@ -37,6 +38,7 @@ export class UsersController {
     );
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get(':id')
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe)
@@ -47,37 +49,19 @@ export class UsersController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
-    try {
-      const newUser: IUser = await this.usersService.create(createUserDto);
-
-      return newUser;
-    } catch (error) {
-      if (error instanceof NotUniqueError) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
-    }
+    return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Put(':id')
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
-    try {
-      const updatedUser: IUser = await this.usersService.update(
-        user,
-        updateUserDto,
-      );
-
-      return updatedUser;
-    } catch (error) {
-      if (error instanceof NotUniqueError) {
-        throw new BadRequestException(error.message);
-      }
-    }
+    return this.usersService.update(user, updateUserDto);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   @HttpCode(204)
   async delete(

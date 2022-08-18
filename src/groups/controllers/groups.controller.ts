@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { GroupsService } from '../services/groups.service';
 import { IGroup } from '../interfaces/group.interface';
@@ -18,14 +18,15 @@ import { QueryDto } from 'src/common/dto/query.dto';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
 import { AddUsersToGroupDto } from '../dto/add-users-to-group.dto';
-import { GroupByIdPipe } from '../validation/group-by-id.pipe';
-import { UsersArrayByIdPipe } from 'src/users/validation/pipes/users-by-id-array.pipe';
-import { NotUniqueError } from 'src/common/errors/not-unique.error';
+import { GroupByIdPipe } from '../pipes/group-by-id.pipe';
+import { UsersArrayByIdPipe } from 'src/users/pipes/users-by-id-array.pipe';
+import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
 @Controller('v1/groups')
 export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAll(
     @Query() query: QueryDto,
@@ -35,6 +36,7 @@ export class GroupsController {
     return this.groupsService.findAll(limit, offset);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get(':id')
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
@@ -45,17 +47,10 @@ export class GroupsController {
 
   @Post()
   async create(@Body() createGroupDto: CreateGroupDto): Promise<IGroup> {
-    try {
-      const newGroup: IGroup = await this.groupsService.create(createGroupDto);
-
-      return newGroup;
-    } catch (error) {
-      if (error instanceof NotUniqueError) {
-        throw new BadRequestException(error.message);
-      }
-    }
+    return this.groupsService.create(createGroupDto);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Post(':groupId')
   async addUsersToGroup(
     @Param('groupId', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
@@ -67,26 +62,17 @@ export class GroupsController {
     await this.groupsService.addUsersToGroup(group, userIds);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Put(':id')
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
     group: IGroup,
     @Body() updateGroupDto: UpdateGroupDto,
   ): Promise<IGroup> {
-    try {
-      const updatedGroup: IGroup = await this.groupsService.update(
-        group,
-        updateGroupDto,
-      );
-
-      return updatedGroup;
-    } catch (error) {
-      if (error instanceof NotUniqueError) {
-        throw new BadRequestException(error.message);
-      }
-    }
+    return this.groupsService.update(group, updateGroupDto);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   @HttpCode(204)
   async delete(

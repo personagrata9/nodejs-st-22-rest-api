@@ -2,12 +2,14 @@ import {
   BelongsToMany,
   Column,
   DataType,
+  HasOne,
   Model,
   Sequelize,
   Table,
 } from 'sequelize-typescript';
 import { Group } from 'src/groups/models/group.model';
 import { UserGroup } from 'src/groups/models/user-group.model.';
+import { RefreshToken } from 'src/auth/models/refresh-token.model';
 
 @Table({ tableName: 'Users' })
 export class User extends Model {
@@ -33,4 +35,7 @@ export class User extends Model {
 
   @BelongsToMany(() => Group, () => UserGroup)
   groups: Group[];
+
+  @HasOne(() => RefreshToken, 'userId')
+  refreshToken: RefreshToken;
 }

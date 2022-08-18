@@ -8,6 +8,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SequelizeUsersRepository implements UsersRepository {
@@ -19,6 +20,14 @@ export class SequelizeUsersRepository implements UsersRepository {
   findOneById = async (id: string): Promise<IUser | null> => {
     const user: User = await this.userModel.findOne({
       where: { id },
+    });
+
+    return user ? user.toJSON() : null;
+  };
+
+  findOneByLogin = async (login: string): Promise<IUser | null> => {
+    const user: User = await this.userModel.findOne({
+      where: { login },
     });
 
     return user ? user.toJSON() : null;
@@ -52,6 +61,7 @@ export class SequelizeUsersRepository implements UsersRepository {
     try {
       const newUser: User = await this.userModel.create({
         ...createUserDto,
+        password: await bcrypt.hash(createUserDto.password, 10),
         isDeleted: false,
       });
 
@@ -71,10 +81,16 @@ export class SequelizeUsersRepository implements UsersRepository {
   ): Promise<IUser> => {
     try {
       const updatedUser: User = (
-        await this.userModel.update(updateUserDto, {
-          where: { id: user.id },
-          returning: true,
-        })
+        await this.userModel.update(
+          {
+            ...updateUserDto,
+            password: await bcrypt.hash(updateUserDto.password, 10),
+          },
+          {
+            where: { id: user.id },
+            returning: true,
+          },
+        )
       )[1][0];
 
       return updatedUser.toJSON();

@@ -6,8 +6,8 @@ import {
   Min,
   Max,
 } from 'class-validator';
-import { HasLetter } from '../validation/decorators/has-letter.decorator';
-import { HasNumber } from '../validation/decorators/has-number.decorator';
+import { HasLetter } from '../decorators/has-letter.decorator';
+import { HasNumber } from '../decorators/has-number.decorator';
 
 export class CreateUserDto {
   @IsString()

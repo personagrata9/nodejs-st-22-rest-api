@@ -30,7 +30,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ExceptionLoggingInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  const port = process.env.PORT || 3000;
+  const port = +process.env.PORT || 3000;
   await app.listen(port);
   logger.info(`Server ready at ${port}`);
 }

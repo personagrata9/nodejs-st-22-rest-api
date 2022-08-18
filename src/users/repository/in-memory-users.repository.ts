@@ -5,16 +5,23 @@ import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-r
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { inMemoruDB } from 'src/database/in-memory-db/in-memory-db';
+import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
-  private users: IUser[] = inMemoruDB.users;
+  private users: IUser[] = inMemoryDB.users;
 
   findOneById = async (id: string): Promise<IUser | null> =>
     new Promise((resolve) => {
       const user: IUser = this.users.find((user) => user.id === id);
+      resolve(user || null);
+    });
+
+  findOneByLogin = async (login: string): Promise<IUser | null> =>
+    new Promise((resolve) => {
+      const user: IUser = this.users.find((user) => user.login === login);
       resolve(user || null);
     });
 
@@ -68,16 +75,17 @@ export class InMemoryUsersRepository implements UsersRepository {
     });
 
   create = async (createUserDto: CreateUserDto): Promise<IUser> => {
-    const { login } = createUserDto;
-    const isLoginUnique: boolean = await this.ckeckLoginUnique(login);
-
     const id: string = await this.createUserId();
+    const { login, password } = createUserDto;
+    const isLoginUnique: boolean = await this.ckeckLoginUnique(login);
+    const hashedPassword: string = await bcrypt.hash(password, 10);
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
         const newUser: IUser = {
           id,
           ...createUserDto,
+          password: hashedPassword,
           isDeleted: false,
         };
         this.users.push(newUser);
@@ -94,15 +102,16 @@ export class InMemoryUsersRepository implements UsersRepository {
     updateUserDto: UpdateUserDto,
   ): Promise<IUser> => {
     const { id } = user;
-    const { login } = updateUserDto;
+    const { login, password } = updateUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login, id);
+    const hashedPassword: string = await bcrypt.hash(password, 10);
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
         const updatedUser: IUser = {
-          id,
+          ...user,
           ...updateUserDto,
-          isDeleted: false,
+          password: hashedPassword,
         };
 
         const userIndex: number = this.users.findIndex(
