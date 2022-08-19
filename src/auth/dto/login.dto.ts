@@ -7,6 +7,7 @@ export class LoginDto {
   username: string;
 
   @IsString()
+  @IsNotEmpty()
   @IsDefined({ message: '$property is required' })
   password: string;
 }

@@ -137,8 +137,8 @@ Service use PostgreSQL as a database system by default, if you need to use in-me
   ```
 
   - Service will answer with `status code` **201** and tokens if succeed
-  - Service will answer with `status code` **400** and detailed error message if request `body` does not contain **required** fields or fields are not valid
-  - Service will answer with `status code` **404** and message **'user with login \${username} doesn't exist'** or **'user with login \${username} is deleted'** if user record with `login === username` doesn't exist or is marked as deleted
+  - Service will answer with `status code` **400** and detailed error message if request `body` does not contain **required** fields or fields are not valid (not a string)
+  - Service will answer with `status code` **401** and message **'username or password is incorrect'** if user record with provided credentials doesn't exist or is marked as deleted
 
 - **GET** `v1/auth/refresh` - **protected (refresh JTW token must be provided)** - is used to refresh tokens
 
@@ -146,9 +146,8 @@ Service use PostgreSQL as a database system by default, if you need to use in-me
 
 4. To access the protected routes the Bearer Token must be provided with the **Authorization: Bearer {JWT token}** HTTP header.
 
-- Service will answer with `status code` **401** and message **'jwt token must be provided'** in case of the HTTP Authorization header is absent in the request
-- Service will answer with `status code` **403** and message **'jwt token expired'** or **'invalid jwt token'** if token is expired or invalid
-- Service will answer with `status code` **403** and message **'access denied'** if user record with provided JWT token doesn't exist or is marked as deleted
+- Service will answer with `status code` **401** and message **'authorization required'** in case of the HTTP Authorization header is absent in the request
+- Service will answer with `status code` **403** and message **'access denied'** if token is expired or invalid or if user record with provided JWT token doesn't exist or is marked as deleted
 
 ## Testing
 
