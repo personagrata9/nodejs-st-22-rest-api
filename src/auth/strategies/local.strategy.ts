@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { UsersService } from 'src/users/services/users.service';
 import { IUser } from 'src/users/interfaces/user.interface';
-import * as bcrypt from 'bcrypt';
+import { comparePassword } from 'src/common/utils/compare-password';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
       throw new UnauthorizedException('username or password is incorrect');
     }
 
-    const isPasswordMatches: boolean = await bcrypt.compare(
+    const isPasswordMatches: boolean = await comparePassword(
       password,
       user.password,
     );

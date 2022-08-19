@@ -7,7 +7,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
-import * as bcrypt from 'bcrypt';
+import { hashPassword } from 'src/common/utils/hash-password';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {
@@ -78,7 +78,7 @@ export class InMemoryUsersRepository implements UsersRepository {
     const id: string = await this.createUserId();
     const { login, password } = createUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login);
-    const hashedPassword: string = await bcrypt.hash(password, 10);
+    const hashedPassword: string = await hashPassword(password);
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
@@ -104,7 +104,7 @@ export class InMemoryUsersRepository implements UsersRepository {
     const { id } = user;
     const { login, password } = updateUserDto;
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login, id);
-    const hashedPassword: string = await bcrypt.hash(password, 10);
+    const hashedPassword: string = await hashPassword(password);
 
     return new Promise((resolve, reject) => {
       if (isLoginUnique) {
