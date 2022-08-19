@@ -21,17 +21,24 @@ process.on('unhandledRejection', (reason) => {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors();
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
   );
+
   app.useGlobalInterceptors(new ExceptionLoggingInterceptor());
+
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const port = +process.env.PORT || 3000;
   await app.listen(port);
+
   logger.info(`Server ready at ${port}`);
 }
+
 bootstrap();
