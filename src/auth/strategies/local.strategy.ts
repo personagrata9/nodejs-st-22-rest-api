@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { UsersService } from 'src/users/services/users.service';
@@ -18,12 +14,8 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   async validate(username: string, password: string): Promise<IUser> {
     const user: IUser = await this.usersService.findByLogin(username);
 
-    if (user) {
-      if (user.isDeleted) {
-        throw new NotFoundException(`user with login ${username} is deleted`);
-      }
-    } else {
-      throw new NotFoundException(`user with login ${username} doesn't exist`);
+    if (!user || user.isDeleted) {
+      throw new UnauthorizedException('username or password is incorrect');
     }
 
     const isPasswordMatches: boolean = await bcrypt.compare(
@@ -32,7 +24,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     );
 
     if (!isPasswordMatches)
-      throw new BadRequestException('Password is incorrect');
+      throw new UnauthorizedException('username or password is incorrect');
 
     return user;
   }

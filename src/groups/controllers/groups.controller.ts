@@ -22,11 +22,11 @@ import { GroupByIdPipe } from '../pipes/group-by-id.pipe';
 import { UsersArrayByIdPipe } from 'src/users/pipes/users-by-id-array.pipe';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
+@UseGuards(AccessTokenGuard)
 @Controller('v1/groups')
 export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
-  @UseGuards(AccessTokenGuard)
   @Get()
   async getAll(
     @Query() query: QueryDto,
@@ -36,7 +36,6 @@ export class GroupsController {
     return this.groupsService.findAll(limit, offset);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Get(':id')
   async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
@@ -45,13 +44,11 @@ export class GroupsController {
     return group;
   }
 
-  @UseGuards(AccessTokenGuard)
   @Post()
   async create(@Body() createGroupDto: CreateGroupDto): Promise<IGroup> {
     return this.groupsService.create(createGroupDto);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Post(':groupId')
   async addUsersToGroup(
     @Param('groupId', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
@@ -63,7 +60,6 @@ export class GroupsController {
     await this.groupsService.addUsersToGroup(group, userIds);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Put(':id')
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
@@ -73,7 +69,6 @@ export class GroupsController {
     return this.groupsService.update(group, updateGroupDto);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   @HttpCode(204)
   async delete(

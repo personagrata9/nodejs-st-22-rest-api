@@ -13,10 +13,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(
-    @Body() loginDto: LoginDto,
-    @Req() req: Request,
-  ): Promise<ITokens> {
+  async login(@Body() _: LoginDto, @Req() req: Request): Promise<ITokens> {
     return this.authService.login(req.user as IUser);
   }
 
