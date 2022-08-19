@@ -45,6 +45,7 @@ export class GroupsController {
     return group;
   }
 
+  @UseGuards(AccessTokenGuard)
   @Post()
   async create(@Body() createGroupDto: CreateGroupDto): Promise<IGroup> {
     return this.groupsService.create(createGroupDto);

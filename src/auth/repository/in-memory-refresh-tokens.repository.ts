@@ -3,7 +3,6 @@ import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
 import { IRefreshToken } from '../interfaces/refresh-token.interface';
 import { RefreshTokensRepository } from './refresh-tokens.repository';
 import { v4 as uuidv4 } from 'uuid';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class InMemoryRefreshTokensRepository
@@ -39,12 +38,11 @@ export class InMemoryRefreshTokensRepository
   create = async (dto: Omit<IRefreshToken, 'id'>): Promise<IRefreshToken> => {
     const id: string = await this.createTokenId();
     const { token, userId } = dto;
-    const hashedToken: string = await bcrypt.hash(token, 10);
 
     return new Promise((resolve) => {
       const newRefreshToken: IRefreshToken = {
         id,
-        token: hashedToken,
+        token,
         userId,
       };
       this.refreshTokens.push(newRefreshToken);
@@ -57,12 +55,10 @@ export class InMemoryRefreshTokensRepository
     refreshToken: IRefreshToken,
     token: string,
   ): Promise<IRefreshToken> => {
-    const hashedToken: string = await bcrypt.hash(token, 10);
-
     return new Promise((resolve) => {
       const updatedRefreshToken: IRefreshToken = {
         ...refreshToken,
-        token: hashedToken,
+        token,
       };
 
       const refreshTokenIndex: number = this.refreshTokens.findIndex(

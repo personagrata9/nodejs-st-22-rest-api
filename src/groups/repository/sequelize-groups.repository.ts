@@ -17,13 +17,10 @@ export class SequelizeGroupsRepository implements GroupsRepository {
     private groupModel: typeof Group,
   ) {}
 
-  findOneById = async (id: string): Promise<IGroup | undefined> => {
-    const group: Group = await this.groupModel.findOne({
+  findOneById = async (id: string): Promise<IGroup | undefined> =>
+    this.groupModel.findOne({
       where: { id },
     });
-
-    return group ? group.toJSON() : null;
-  };
 
   findAll = async (
     limit: number,
@@ -47,10 +44,9 @@ export class SequelizeGroupsRepository implements GroupsRepository {
     try {
       const newGroup: Group = await this.groupModel.create({
         ...createGroupDto,
-        isDeleted: false,
       });
 
-      return newGroup.toJSON();
+      return newGroup;
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new NotUniqueError('group', 'name', createGroupDto.name);
@@ -72,7 +68,7 @@ export class SequelizeGroupsRepository implements GroupsRepository {
         })
       )[1][0];
 
-      return updatedGroup.toJSON();
+      return updatedGroup;
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new NotUniqueError('group', 'name', updateGroupDto.name);

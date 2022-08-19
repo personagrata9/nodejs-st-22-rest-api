@@ -17,21 +17,15 @@ export class SequelizeUsersRepository implements UsersRepository {
     private userModel: typeof User,
   ) {}
 
-  findOneById = async (id: string): Promise<IUser | null> => {
-    const user: User = await this.userModel.findOne({
+  findOneById = async (id: string): Promise<IUser | null> =>
+    this.userModel.findOne({
       where: { id },
     });
 
-    return user ? user.toJSON() : null;
-  };
-
-  findOneByLogin = async (login: string): Promise<IUser | null> => {
-    const user: User = await this.userModel.findOne({
+  findOneByLogin = async (login: string): Promise<IUser | null> =>
+    this.userModel.findOne({
       where: { login },
     });
-
-    return user ? user.toJSON() : null;
-  };
 
   findAll = async (
     limit: number,
@@ -65,7 +59,7 @@ export class SequelizeUsersRepository implements UsersRepository {
         isDeleted: false,
       });
 
-      return newUser.toJSON();
+      return newUser;
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new NotUniqueError('user', 'login', createUserDto.login);
@@ -93,7 +87,7 @@ export class SequelizeUsersRepository implements UsersRepository {
         )
       )[1][0];
 
-      return updatedUser.toJSON();
+      return updatedUser;
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new NotUniqueError('user', 'login', updateUserDto.login);

@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/sequelize';
 import { IRefreshToken } from '../interfaces/refresh-token.interface';
 import { RefreshToken } from '../models/refresh-token.model';
 import { RefreshTokensRepository } from './refresh-tokens.repository';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SequelizeRefreshTokensRepository
@@ -26,7 +25,7 @@ export class SequelizeRefreshTokensRepository
     const { token, userId } = dto;
 
     const newRefreshToken: RefreshToken = await this.refreshTokenModel.create({
-      token: await bcrypt.hash(token, 10),
+      token,
       userId,
     });
 
@@ -41,7 +40,7 @@ export class SequelizeRefreshTokensRepository
 
     const updatedRefreshToken: RefreshToken = (
       await this.refreshTokenModel.update(
-        { token: await bcrypt.hash(token, 10) },
+        { token },
         {
           where: { userId },
           returning: true,

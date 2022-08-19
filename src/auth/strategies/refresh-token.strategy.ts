@@ -7,7 +7,6 @@ import { UsersService } from 'src/users/services/users.service';
 import { RefreshTokensService } from '../services/refresh-tokens.service';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { IRefreshToken } from '../interfaces/refresh-token.interface';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -36,12 +35,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       throw new ForbiddenException('access denied');
     }
 
-    const isRefreshTokenMatches: boolean = await bcrypt.compare(
-      refreshToken,
-      userRefreshToken.token,
-    );
-
-    if (!isRefreshTokenMatches) {
+    if (refreshToken !== userRefreshToken.token) {
       throw new ForbiddenException('access denied');
     }
 
