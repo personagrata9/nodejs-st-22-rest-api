@@ -4,7 +4,7 @@ import { handleJwtAuthGuardRequestInfo } from '../utils/handle-jwt-auth-guard-re
 
 @Injectable()
 export class AccessTokenGuard extends AuthGuard('jwt') {
-  handleRequest(error: any, user: any, info: Error) {
+  handleRequest(error: any, user: any, info: any) {
     if (error) {
       throw error;
     }

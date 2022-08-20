@@ -58,7 +58,7 @@ export class UsersController {
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
-    return this.usersService.update(user, updateUserDto);
+    return this.usersService.update(user.id, updateUserDto);
   }
 
   @UseGuards(AccessTokenGuard)
@@ -67,6 +67,6 @@ export class UsersController {
   async delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
   ): Promise<void> {
-    return this.usersService.delete(user);
+    return this.usersService.delete(user.id);
   }
 }

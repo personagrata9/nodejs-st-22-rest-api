@@ -57,7 +57,7 @@ export class GroupsController {
   ): Promise<void> {
     const { userIds } = addUsersToGroupDto;
 
-    await this.groupsService.addUsersToGroup(group, userIds);
+    await this.groupsService.addUsersToGroup(group.id, userIds);
   }
 
   @Put(':id')
@@ -66,7 +66,7 @@ export class GroupsController {
     group: IGroup,
     @Body() updateGroupDto: UpdateGroupDto,
   ): Promise<IGroup> {
-    return this.groupsService.update(group, updateGroupDto);
+    return this.groupsService.update(group.id, updateGroupDto);
   }
 
   @Delete(':id')
@@ -75,6 +75,6 @@ export class GroupsController {
     @Param('id', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
     group: IGroup,
   ): Promise<void> {
-    return this.groupsService.delete(group);
+    return this.groupsService.delete(group.id);
   }
 }

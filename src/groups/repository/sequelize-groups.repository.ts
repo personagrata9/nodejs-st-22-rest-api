@@ -57,13 +57,13 @@ export class SequelizeGroupsRepository implements GroupsRepository {
   };
 
   update = async (
-    group: IGroup,
+    id: string,
     updateGroupDto: UpdateGroupDto,
   ): Promise<IGroup> => {
     try {
       const updatedGroup: Group = (
         await this.groupModel.update(updateGroupDto, {
-          where: { id: group.id },
+          where: { id },
           returning: true,
         })
       )[1][0];
@@ -78,14 +78,14 @@ export class SequelizeGroupsRepository implements GroupsRepository {
     }
   };
 
-  delete = async (group: IGroup): Promise<void> => {
-    await this.groupModel.destroy({ where: { id: group.id } });
+  delete = async (id: string): Promise<void> => {
+    await this.groupModel.destroy({ where: { id } });
   };
 
-  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> => {
+  addUsersToGroup = async (id: string, userIds: string[]): Promise<void> => {
     await this.sequelize.transaction(async (t) => {
       const groupModel: Group = await this.groupModel.findOne({
-        where: { id: group.id },
+        where: { id },
         transaction: t,
       });
 

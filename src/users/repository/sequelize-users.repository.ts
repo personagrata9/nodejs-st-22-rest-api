@@ -69,10 +69,7 @@ export class SequelizeUsersRepository implements UsersRepository {
     }
   };
 
-  update = async (
-    user: IUser,
-    updateUserDto: UpdateUserDto,
-  ): Promise<IUser> => {
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
     try {
       const updatedUser: User = (
         await this.userModel.update(
@@ -81,7 +78,7 @@ export class SequelizeUsersRepository implements UsersRepository {
             password: await hashPassword(updateUserDto.password),
           },
           {
-            where: { id: user.id },
+            where: { id },
             returning: true,
           },
         )
@@ -97,11 +94,11 @@ export class SequelizeUsersRepository implements UsersRepository {
     }
   };
 
-  delete = async (user: IUser): Promise<void> => {
+  delete = async (id: string): Promise<void> => {
     await this.userModel.update(
       { isDeleted: true },
       {
-        where: { id: user.id },
+        where: { id },
       },
     );
   };
