@@ -6,6 +6,7 @@ import { ITokens } from '../interfaces/tokens.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { LoginDto } from '../dto/login.dto';
 import { Request } from 'express';
+import { ILoginResponse } from '../interfaces/login-response.interface';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -13,16 +14,26 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() _: LoginDto, @Req() req: Request): Promise<ITokens> {
-    return this.authService.login(req.user as IUser);
+  async login(
+    @Body() _: LoginDto,
+    @Req() req: Request,
+  ): Promise<ILoginResponse> {
+    const user = req.user as IUser;
+    const { login, age } = user;
+    const jwt: ITokens = await this.authService.getTokens(user);
+
+    return {
+      user: {
+        login,
+        age,
+      },
+      jwt,
+    };
   }
 
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   refreshTokens(@Req() req: Request): Promise<ITokens> {
-    const userId = req.user['userId'];
-    const username = req.user['sub'];
-
-    return this.authService.refreshTokens(userId, username);
+    return this.authService.refreshTokens(req.user as IUser);
   }
 }

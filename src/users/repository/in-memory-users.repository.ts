@@ -97,12 +97,9 @@ export class InMemoryUsersRepository implements UsersRepository {
     });
   };
 
-  update = async (
-    user: IUser,
-    updateUserDto: UpdateUserDto,
-  ): Promise<IUser> => {
-    const { id } = user;
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
     const { login, password } = updateUserDto;
+    const user: IUser = await this.findOneById(id);
     const isLoginUnique: boolean = await this.ckeckLoginUnique(login, id);
     const hashedPassword: string = await bcrypt.hash(password, 10);
 
@@ -126,13 +123,16 @@ export class InMemoryUsersRepository implements UsersRepository {
     });
   };
 
-  delete = async (user: IUser): Promise<void> =>
-    new Promise((resolve) => {
-      const userIndex: number = this.users.findIndex(
-        (user) => user.id === user.id,
-      );
+  delete = async (id: string): Promise<void> => {
+    const userIndex: number = this.users.findIndex(
+      (user) => user.id === user.id,
+    );
+    const user: IUser = await this.findOneById(id);
+
+    return new Promise((resolve) => {
       this.users.splice(userIndex, 1, { ...user, isDeleted: true });
 
       resolve();
     });
+  };
 }

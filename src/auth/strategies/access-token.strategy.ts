@@ -20,7 +20,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload): Promise<JwtPayload> {
     const user: IUser = await this.usersService.findOneById(payload.userId);
 
     if (!user || user.isDeleted) {

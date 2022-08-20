@@ -13,31 +13,39 @@ export class AuthService {
     private refreshTokensService: RefreshTokensService,
   ) {}
 
-  login = async (user: IUser): Promise<ITokens> => {
-    const { id: userId, login: username } = user;
+  getTokens = async (user: IUser): Promise<ITokens> => {
+    const { id: userId } = user;
+    const tokens = await this.generateTokens(user);
 
-    return this.refreshTokens(userId, username);
-  };
+    const existingRefreshToken: IRefreshToken =
+      await this.refreshTokensService.findOneByUserId(userId);
 
-  refreshTokens = async (
-    userId: string,
-    username: string,
-  ): Promise<ITokens> => {
-    const tokens = await this.generateTokens(userId, username);
-
-    await this.updateRefreshToken(userId, tokens.refreshToken);
+    if (!existingRefreshToken) {
+      await this.refreshTokensService.create({
+        userId,
+        token: tokens.refreshToken,
+      });
+    } else {
+      await this.refreshTokensService.update(userId, tokens.refreshToken);
+    }
 
     return tokens;
   };
 
-  private generateTokens = async (
-    userId: string,
-    username: string,
-  ): Promise<ITokens> => {
+  refreshTokens = async (user: IUser): Promise<ITokens> => {
+    const tokens = await this.generateTokens(user);
+
+    await this.refreshTokensService.update(user.id, tokens.refreshToken);
+
+    return tokens;
+  };
+
+  private generateTokens = async (user: IUser): Promise<ITokens> => {
+    const { login, id: userId } = user;
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
-          sub: username,
+          sub: login,
           userId,
         },
         {
@@ -47,7 +55,7 @@ export class AuthService {
       ),
       this.jwtService.signAsync(
         {
-          sub: username,
+          sub: login,
           userId,
         },
         {
@@ -61,22 +69,5 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
-  };
-
-  private updateRefreshToken = async (
-    userId: string,
-    token: string,
-  ): Promise<void> => {
-    const existingRefreshToken: IRefreshToken =
-      await this.refreshTokensService.findOneByUserId(userId);
-
-    if (existingRefreshToken) {
-      this.refreshTokensService.update(existingRefreshToken, token);
-    } else {
-      this.refreshTokensService.create({
-        token,
-        userId,
-      });
-    }
   };
 }

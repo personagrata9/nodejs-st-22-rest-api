@@ -79,17 +79,16 @@ export class InMemoryGroupsRepository implements GroupsRepository {
   };
 
   update = async (
-    group: IGroup,
+    id: string,
     updateGroupDto: UpdateGroupDto,
   ): Promise<IGroup> => {
-    const { id } = group;
     const { name } = updateGroupDto;
     const isNameUnique: boolean = await this.ckeckNameUnique(name, id);
 
     return new Promise((resolve, reject) => {
       if (isNameUnique) {
         const updatedGroup: IGroup = {
-          ...group,
+          id,
           ...updateGroupDto,
         };
 
@@ -105,14 +104,14 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     });
   };
 
-  delete = async (group: IGroup): Promise<void> =>
+  delete = async (id: string): Promise<void> =>
     new Promise((resolve) => {
       const groupIndex: number = this.groups.findIndex(
         (group) => group.id === group.id,
       );
       this.groups.splice(groupIndex, 1);
 
-      this.deleteRelationsFromUserGroup(group.id);
+      this.deleteRelationsFromUserGroup(id);
 
       resolve();
     });
@@ -135,9 +134,9 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     this.userGroup = this.userGroup.filter((item) => item[1] !== groupId);
   };
 
-  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> => {
+  addUsersToGroup = async (id: string, userIds: string[]): Promise<void> => {
     const results = await Promise.all(
-      userIds.map((userId) => this.addOneUserToGroup(group.id, userId)),
+      userIds.map((userId) => this.addOneUserToGroup(id, userId)),
     );
 
     results.forEach((result) => {

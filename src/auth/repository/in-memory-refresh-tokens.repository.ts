@@ -51,19 +51,18 @@ export class InMemoryRefreshTokensRepository
     });
   };
 
-  update = async (
-    refreshToken: IRefreshToken,
-    token: string,
-  ): Promise<IRefreshToken> => {
+  update = async (userId: string, token: string): Promise<IRefreshToken> => {
+    const refreshToken: IRefreshToken = await this.findOneByUserId(userId);
+
     return new Promise((resolve) => {
       const updatedRefreshToken: IRefreshToken = {
         ...refreshToken,
         token,
       };
-
       const refreshTokenIndex: number = this.refreshTokens.findIndex(
         (token) => token.id === refreshToken.id,
       );
+
       this.refreshTokens.splice(refreshTokenIndex, 1, updatedRefreshToken);
 
       resolve(updatedRefreshToken);

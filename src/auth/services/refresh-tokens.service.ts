@@ -15,9 +15,6 @@ export class RefreshTokensService {
   create = async (dto: Omit<IRefreshToken, 'id'>): Promise<IRefreshToken> =>
     this.refreshTokensRepository.create(dto);
 
-  update = async (
-    refreshToken: IRefreshToken,
-    token: string,
-  ): Promise<IRefreshToken> =>
-    this.refreshTokensRepository.update(refreshToken, token);
+  update = async (userId: string, token: string): Promise<IRefreshToken> =>
+    this.refreshTokensRepository.update(userId, token);
 }

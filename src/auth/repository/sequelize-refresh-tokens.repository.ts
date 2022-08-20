@@ -32,12 +32,7 @@ export class SequelizeRefreshTokensRepository
     return newRefreshToken.toJSON();
   };
 
-  update = async (
-    refreshToken: IRefreshToken,
-    token: string,
-  ): Promise<IRefreshToken> => {
-    const { userId } = refreshToken;
-
+  update = async (userId: string, token: string): Promise<IRefreshToken> => {
     const updatedRefreshToken: RefreshToken = (
       await this.refreshTokenModel.update(
         { token },

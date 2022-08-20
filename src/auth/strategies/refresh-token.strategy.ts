@@ -25,11 +25,12 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(req: Request, payload: any) {
+  async validate(req: Request, payload: any): Promise<any> {
+    const userId: string = payload['userId'];
     const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
-    const user: IUser = await this.usersService.findOneById(payload.userId);
+    const user: IUser = await this.usersService.findOneById(userId);
     const userRefreshToken: IRefreshToken =
-      await this.refreshTokensService.findOneByUserId(payload.userId);
+      await this.refreshTokensService.findOneByUserId(userId);
 
     if (!user || user.isDeleted || !userRefreshToken) {
       throw new ForbiddenException('access denied');
@@ -39,6 +40,6 @@ export class RefreshTokenStrategy extends PassportStrategy(
       throw new ForbiddenException('access denied');
     }
 
-    return { ...payload, refreshToken };
+    return user;
   }
 }
