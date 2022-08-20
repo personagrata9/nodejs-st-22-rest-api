@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { inMemoruDB } from 'src/database/in-memory-db/in-memory-db';
+import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
 import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateGroupDto } from '../dto/create-group.dto';
@@ -10,9 +10,8 @@ import { NotUniqueError } from 'src/common/errors/not-unique.error';
 
 @Injectable()
 export class InMemoryGroupsRepository implements GroupsRepository {
-  private groups: IGroup[] = inMemoruDB.groups;
-
-  private userGroup: string[][] = inMemoruDB.userGroup;
+  private groups: IGroup[] = inMemoryDB.groups;
+  private userGroup: string[][] = inMemoryDB.userGroup;
 
   findOneById = async (id: string): Promise<IGroup | null> =>
     new Promise((resolve) => {
@@ -80,10 +79,9 @@ export class InMemoryGroupsRepository implements GroupsRepository {
   };
 
   update = async (
-    group: IGroup,
+    id: string,
     updateGroupDto: UpdateGroupDto,
   ): Promise<IGroup> => {
-    const { id } = group;
     const { name } = updateGroupDto;
     const isNameUnique: boolean = await this.ckeckNameUnique(name, id);
 
@@ -106,14 +104,14 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     });
   };
 
-  delete = async (group: IGroup): Promise<void> =>
+  delete = async (id: string): Promise<void> =>
     new Promise((resolve) => {
       const groupIndex: number = this.groups.findIndex(
         (group) => group.id === group.id,
       );
       this.groups.splice(groupIndex, 1);
 
-      this.deleteRelationsFromUserGroup(group.id);
+      this.deleteRelationsFromUserGroup(id);
 
       resolve();
     });
@@ -136,9 +134,9 @@ export class InMemoryGroupsRepository implements GroupsRepository {
     this.userGroup = this.userGroup.filter((item) => item[1] !== groupId);
   };
 
-  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> => {
+  addUsersToGroup = async (id: string, userIds: string[]): Promise<void> => {
     const results = await Promise.all(
-      userIds.map((userId) => this.addOneUserToGroup(group.id, userId)),
+      userIds.map((userId) => this.addOneUserToGroup(id, userId)),
     );
 
     results.forEach((result) => {

@@ -12,6 +12,7 @@ import { WinstonLogger } from '../loggers/winston.logger';
 import { logException } from '../utils/log-exception';
 import { ExceptionResponse } from '../interfaces/exception-response.interface';
 import { getExceptionResponse } from '../utils/get-exception-response';
+import { errorHadler } from '../errors/error-handler';
 
 @Injectable()
 export class ExceptionLoggingInterceptor implements NestInterceptor {
@@ -23,7 +24,9 @@ export class ExceptionLoggingInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      catchError(async (exception: unknown) => {
+      catchError(async (error: unknown) => {
+        const exception = errorHadler(error);
+
         const ctx = context.switchToHttp();
 
         const req = ctx.getRequest<Request>();

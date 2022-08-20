@@ -7,11 +7,15 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { User } from 'src/users/models/user.model';
-import { Permission, PermissionType } from '../interfaces/group.interface';
+import {
+  IGroup,
+  Permission,
+  PermissionType,
+} from '../interfaces/group.interface';
 import { UserGroup } from './user-group.model.';
 
 @Table({ tableName: 'Groups' })
-export class Group extends Model {
+export class Group extends Model<Group, IGroup> {
   @Column({
     type: DataType.STRING,
     unique: true,

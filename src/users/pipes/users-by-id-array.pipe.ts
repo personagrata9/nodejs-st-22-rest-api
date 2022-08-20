@@ -1,25 +1,20 @@
-import {
-  PipeTransform,
-  Injectable,
-  Inject,
-  NotFoundException,
-} from '@nestjs/common';
-import { UsersRepository } from 'src/users/repository/users.repository';
+import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
 import { UserByIdPipe } from './user-by-id.pipe';
 import { AddUsersToGroupDto } from 'src/groups/dto/add-users-to-group.dto';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class UsersArrayByIdPipe implements PipeTransform {
-  constructor(
-    @Inject('UsersRepository') private usersRepository: UsersRepository,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  async transform(addUsersToGroupDto: AddUsersToGroupDto) {
+  async transform(
+    addUsersToGroupDto: AddUsersToGroupDto,
+  ): Promise<AddUsersToGroupDto> {
     const { userIds } = addUsersToGroupDto;
 
     const results = await Promise.allSettled(
       userIds.map((userId) =>
-        new UserByIdPipe(this.usersRepository).transform(userId),
+        new UserByIdPipe(this.usersService).transform(userId),
       ),
     );
 

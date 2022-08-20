@@ -7,10 +7,6 @@ type EntityNameType = 'user' | 'group';
 type propertyName = keyof IUser | keyof IGroup;
 
 export class NotUniqueError extends CustomError {
-  entityName: EntityNameType;
-  propertyName: propertyName;
-  propertyValue: string;
-
   constructor(
     entityName: EntityNameType,
     propertyName: propertyName,
@@ -20,7 +16,5 @@ export class NotUniqueError extends CustomError {
       `${entityName} with ${propertyName} ${propertyValue} already exists, please choose another ${propertyName}`,
     );
     this.name = 'NotUniqueError';
-    this.propertyName = propertyName;
-    this.propertyValue = propertyValue;
   }
 }

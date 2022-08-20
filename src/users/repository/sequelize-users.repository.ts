@@ -8,6 +8,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SequelizeUsersRepository implements UsersRepository {
@@ -16,13 +17,15 @@ export class SequelizeUsersRepository implements UsersRepository {
     private userModel: typeof User,
   ) {}
 
-  findOneById = async (id: string): Promise<IUser | null> => {
-    const user: User = await this.userModel.findOne({
+  findOneById = async (id: string): Promise<IUser | null> =>
+    this.userModel.findOne({
       where: { id },
     });
 
-    return user ? user.toJSON() : null;
-  };
+  findOneByLogin = async (login: string): Promise<IUser | null> =>
+    this.userModel.findOne({
+      where: { login },
+    });
 
   findAll = async (
     limit: number,
@@ -52,10 +55,11 @@ export class SequelizeUsersRepository implements UsersRepository {
     try {
       const newUser: User = await this.userModel.create({
         ...createUserDto,
+        password: await bcrypt.hash(createUserDto.password, 10),
         isDeleted: false,
       });
 
-      return newUser.toJSON();
+      return newUser;
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new NotUniqueError('user', 'login', createUserDto.login);
@@ -65,19 +69,22 @@ export class SequelizeUsersRepository implements UsersRepository {
     }
   };
 
-  update = async (
-    user: IUser,
-    updateUserDto: UpdateUserDto,
-  ): Promise<IUser> => {
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> => {
     try {
       const updatedUser: User = (
-        await this.userModel.update(updateUserDto, {
-          where: { id: user.id },
-          returning: true,
-        })
+        await this.userModel.update(
+          {
+            ...updateUserDto,
+            password: await bcrypt.hash(updateUserDto.password, 10),
+          },
+          {
+            where: { id },
+            returning: true,
+          },
+        )
       )[1][0];
 
-      return updatedUser.toJSON();
+      return updatedUser;
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new NotUniqueError('user', 'login', updateUserDto.login);
@@ -87,11 +94,11 @@ export class SequelizeUsersRepository implements UsersRepository {
     }
   };
 
-  delete = async (user: IUser): Promise<void> => {
+  delete = async (id: string): Promise<void> => {
     await this.userModel.update(
       { isDeleted: true },
       {
-        where: { id: user.id },
+        where: { id },
       },
     );
   };

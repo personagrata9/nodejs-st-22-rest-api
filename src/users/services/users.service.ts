@@ -21,12 +21,14 @@ export class UsersService {
   findOneById = async (id: string): Promise<IUser> =>
     this.usersRepository.findOneById(id);
 
+  findByLogin = async (login: string): Promise<IUser> =>
+    this.usersRepository.findOneByLogin(login);
+
   create = async (createUserDto: CreateUserDto): Promise<IUser> =>
     this.usersRepository.create(createUserDto);
 
-  update = async (user: IUser, updateUserDto: UpdateUserDto): Promise<IUser> =>
-    this.usersRepository.update(user, updateUserDto);
+  update = async (id: string, updateUserDto: UpdateUserDto): Promise<IUser> =>
+    this.usersRepository.update(id, updateUserDto);
 
-  delete = async (user: IUser): Promise<void> =>
-    this.usersRepository.delete(user);
+  delete = async (id: string): Promise<void> => this.usersRepository.delete(id);
 }

@@ -8,6 +8,6 @@ export interface IRepository<T> {
     filter?: string,
   ): Promise<IPaginatedItemsResult<T>>;
   create(entityDto: any): Promise<T>;
-  update(entity: T, entityDto: any): Promise<T>;
-  delete(entity: T): Promise<void>;
+  update(id: string, entityDto: any): Promise<T>;
+  delete(id: string): Promise<void>;
 }

@@ -24,13 +24,13 @@ export class GroupsService {
     this.groupsRepository.create(createGroupDto);
 
   update = async (
-    group: IGroup,
+    id: string,
     updateGroupDto: UpdateGroupDto,
-  ): Promise<IGroup> => this.groupsRepository.update(group, updateGroupDto);
+  ): Promise<IGroup> => this.groupsRepository.update(id, updateGroupDto);
 
-  delete = async (group: IGroup): Promise<void> =>
-    this.groupsRepository.delete(group);
+  delete = async (id: string): Promise<void> =>
+    this.groupsRepository.delete(id);
 
-  addUsersToGroup = async (group: IGroup, userIds: string[]): Promise<void> =>
-    this.groupsRepository.addUsersToGroup(group, userIds);
+  addUsersToGroup = async (id: string, userIds: string[]): Promise<void> =>
+    this.groupsRepository.addUsersToGroup(id, userIds);
 }
