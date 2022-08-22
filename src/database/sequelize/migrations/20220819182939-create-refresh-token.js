@@ -2,28 +2,32 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Groups', {
+    return queryInterface.createTable('RefreshTokens', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
         defaultValue: Sequelize.literal('uuid_generate_v4()'),
         unique: true,
       },
-      name: {
+      token: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      permissions: {
-        type: Sequelize.ARRAY(
-          Sequelize.ENUM('READ', 'WRITE', 'DELETE', 'SHARE', 'UPLOAD_FILES'),
-        ),
+      userId: {
+        type: Sequelize.DataTypes.UUID,
+        references: {
+          model: {
+            tableName: 'Users',
+          },
+          key: 'id',
+        },
         allowNull: false,
       },
     });
   },
 
   down: async (queryInterface) => {
-    return queryInterface.dropTable('Groups');
+    return queryInterface.dropTable('RefreshTokens');
   },
 };

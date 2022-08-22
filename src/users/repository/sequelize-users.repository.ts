@@ -8,7 +8,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { NotUniqueError } from 'src/common/errors/not-unique.error';
-import * as bcrypt from 'bcrypt';
+import { hashPassword } from 'src/common/utils/hash-password';
 
 @Injectable()
 export class SequelizeUsersRepository implements UsersRepository {
@@ -55,7 +55,7 @@ export class SequelizeUsersRepository implements UsersRepository {
     try {
       const newUser: User = await this.userModel.create({
         ...createUserDto,
-        password: await bcrypt.hash(createUserDto.password, 10),
+        password: await hashPassword(createUserDto.password),
         isDeleted: false,
       });
 
@@ -75,7 +75,7 @@ export class SequelizeUsersRepository implements UsersRepository {
         await this.userModel.update(
           {
             ...updateUserDto,
-            password: await bcrypt.hash(updateUserDto.password, 10),
+            password: await hashPassword(updateUserDto.password),
           },
           {
             where: { id },
