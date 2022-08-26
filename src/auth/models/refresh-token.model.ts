@@ -6,7 +6,7 @@ import {
   BelongsTo,
   Sequelize,
 } from 'sequelize-typescript';
-import { User } from 'src/users/models/user.model';
+import { User } from '../../users/models/user.model';
 
 @Table({ tableName: 'RefreshTokens' })
 export class RefreshToken extends Model {

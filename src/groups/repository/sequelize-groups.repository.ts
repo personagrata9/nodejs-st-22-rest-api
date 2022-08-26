@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { NotUniqueError } from 'src/common/errors/not-unique.error';
-import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { NotUniqueError } from '../../common/errors/not-unique.error';
+import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-result.interface';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
 import { IGroup } from '../interfaces/group.interface';

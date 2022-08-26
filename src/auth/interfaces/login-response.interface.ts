@@ -1,4 +1,4 @@
-import { IUser } from 'src/users/interfaces/user.interface';
+import { IUser } from '../../users/interfaces/user.interface';
 import { ITokens } from './tokens.interface';
 
 export interface ILoginResponse {

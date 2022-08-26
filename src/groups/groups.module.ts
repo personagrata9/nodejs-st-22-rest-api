@@ -7,7 +7,7 @@ import { InMemoryGroupsRepository } from './repository/in-memory-groups.reposito
 import { SequelizeGroupsRepository } from './repository/sequelize-groups.repository';
 import { GroupsController } from './controllers/groups.controller';
 import { UserGroup } from './models/user-group.model.';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [SequelizeModule.forFeature([Group, UserGroup]), UsersModule],

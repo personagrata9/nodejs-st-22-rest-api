@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { User } from '../models/user.model';
 import { IUser } from '../interfaces/user.interface';
-import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-result.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
-import { NotUniqueError } from 'src/common/errors/not-unique.error';
-import { hashPassword } from 'src/common/utils/hash-password';
+import { NotUniqueError } from '../../common/errors/not-unique.error';
+import { hashPassword } from '../../common/utils/hash-password';
 
 @Injectable()
 export class SequelizeUsersRepository implements UsersRepository {

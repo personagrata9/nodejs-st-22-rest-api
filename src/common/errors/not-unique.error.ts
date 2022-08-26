@@ -1,5 +1,5 @@
-import { IGroup } from 'src/groups/interfaces/group.interface';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { IGroup } from '../../groups/interfaces/group.interface';
+import { IUser } from '../../users/interfaces/user.interface';
 import { CustomError } from './custom.error';
 
 type EntityNameType = 'user' | 'group';

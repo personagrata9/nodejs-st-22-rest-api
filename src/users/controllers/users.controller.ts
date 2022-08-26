@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -13,12 +14,13 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { IUser } from '../interfaces/user.interface';
-import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
-import { QueryDto } from 'src/common/dto/query.dto';
+import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-result.interface';
+import { QueryDto } from '../../common/dto/query.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserByIdPipe } from '../pipes/user-by-id.pipe';
-import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
+import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
+import { NotUniqueError } from '../../common/errors/not-unique.error';
 
 @Controller('v1/users')
 export class UsersController {
@@ -49,7 +51,16 @@ export class UsersController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
-    return this.usersService.create(createUserDto);
+    try {
+      const newUser: IUser = await this.usersService.create(createUserDto);
+      return newUser;
+    } catch (error) {
+      if (error instanceof NotUniqueError) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw error;
+      }
+    }
   }
 
   @UseGuards(AccessTokenGuard)
@@ -58,7 +69,19 @@ export class UsersController {
     @Param('id', new ParseUUIDPipe({ version: '4' }), UserByIdPipe) user: IUser,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<IUser> {
-    return this.usersService.update(user.id, updateUserDto);
+    try {
+      const updatedUser: IUser = await this.usersService.update(
+        user.id,
+        updateUserDto,
+      );
+      return updatedUser;
+    } catch (error) {
+      if (error instanceof NotUniqueError) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw error;
+      }
+    }
   }
 
   @UseGuards(AccessTokenGuard)

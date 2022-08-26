@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { RefreshTokenGuard } from 'src/auth/guards/refresh-token.guard';
+import { RefreshTokenGuard } from '../../auth/guards/refresh-token.guard';
 import { ITokens } from '../interfaces/tokens.interface';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { IUser } from '../../users/interfaces/user.interface';
 import { LoginDto } from '../dto/login.dto';
 import { Request } from 'express';
 import { ILoginResponse } from '../interfaces/login-response.interface';

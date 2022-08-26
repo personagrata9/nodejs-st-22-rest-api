@@ -3,9 +3,9 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from '../../users/services/users.service';
 import { RefreshTokensService } from '../services/refresh-tokens.service';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { IUser } from '../../users/interfaces/user.interface';
 import { IRefreshToken } from '../interfaces/refresh-token.interface';
 
 @Injectable()

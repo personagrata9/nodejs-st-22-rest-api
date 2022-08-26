@@ -3,7 +3,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { IUser } from '../interfaces/user.interface';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UsersRepository } from '../repository/users.repository';
-import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-result.interface';
 
 @Injectable()
 export class UsersService {

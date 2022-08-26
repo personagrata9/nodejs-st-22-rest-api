@@ -1,6 +1,6 @@
-import { IRefreshToken } from 'src/auth/interfaces/refresh-token.interface';
-import { IGroup } from 'src/groups/interfaces/group.interface';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { IRefreshToken } from '../../auth/interfaces/refresh-token.interface';
+import { IGroup } from '../../groups/interfaces/group.interface';
+import { IUser } from '../../users/interfaces/user.interface';
 
 interface IInMemoryDB {
   users: IUser[];

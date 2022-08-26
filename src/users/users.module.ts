@@ -6,7 +6,7 @@ import { UsersService } from './services/users.service';
 import { UsersController } from './controllers/users.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './models/user.model';
-import { UserGroup } from 'src/groups/models/user-group.model.';
+import { UserGroup } from '../groups/models/user-group.model.';
 
 @Module({
   imports: [SequelizeModule.forFeature([User, UserGroup])],

@@ -5,13 +5,13 @@ export class QueryDto {
   @IsInt()
   @Transform(({ value }) => Number(value))
   @IsOptional()
-  limit: number;
+  limit?: number;
 
   @IsInt()
   @Transform(({ value }) => Number(value))
   @IsOptional()
-  offset: number;
+  offset?: number;
 
   @IsOptional()
-  loginSubstring: string;
+  loginSubstring?: string;
 }
