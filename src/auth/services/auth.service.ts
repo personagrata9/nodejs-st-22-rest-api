@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokensService } from './refresh-tokens.service';
 import { ITokens } from '../interfaces/tokens.interface';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { IUser } from '../../users/interfaces/user.interface';
 import { IRefreshToken } from '../interfaces/refresh-token.interface';
 
 @Injectable()

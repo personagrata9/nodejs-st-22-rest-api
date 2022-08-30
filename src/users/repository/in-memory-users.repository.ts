@@ -5,9 +5,9 @@ import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-r
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
-import { NotUniqueError } from 'src/common/errors/not-unique.error';
-import { hashPassword } from 'src/common/utils/hash-password';
+import { inMemoryDB } from '../../database/in-memory-db/in-memory-db';
+import { NotUniqueError } from '../../common/errors/not-unique.error';
+import { hashPassword } from '../../common/utils/hash-password';
 
 @Injectable()
 export class InMemoryUsersRepository implements UsersRepository {

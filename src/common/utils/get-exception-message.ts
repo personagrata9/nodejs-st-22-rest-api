@@ -1,9 +1,9 @@
 import { HttpException } from '@nestjs/common';
-import { ExceptionResponse } from '../interfaces/exception-response.interface';
+import { IExceptionResponse } from '../interfaces/exception-response.interface';
 
 export const getExceptionMessage = (exception: unknown): string | string[] => {
   if (exception instanceof HttpException) {
-    return (exception.getResponse() as ExceptionResponse).message;
+    return (exception.getResponse() as IExceptionResponse).message;
   } else if (exception instanceof Error) {
     return exception.message;
   } else {

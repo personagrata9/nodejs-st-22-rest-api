@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UsersService } from 'src/users/services/users.service';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { UsersService } from '../../users/services/users.service';
+import { IUser } from '../../users/interfaces/user.interface';
 
 type JwtPayload = {
   sub: string;

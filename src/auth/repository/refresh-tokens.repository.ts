@@ -1,4 +1,4 @@
-import { IRepository } from 'src/common/interfaces/repository.interface';
+import { IRepository } from '../../common/interfaces/repository.interface';
 import { IRefreshToken } from '../interfaces/refresh-token.interface';
 
 export interface RefreshTokensRepository

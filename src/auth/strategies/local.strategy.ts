@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
-import { UsersService } from 'src/users/services/users.service';
-import { IUser } from 'src/users/interfaces/user.interface';
-import { comparePassword } from 'src/common/utils/compare-password';
+import { UsersService } from '../../users/services/users.service';
+import { IUser } from '../../users/interfaces/user.interface';
+import { comparePassword } from '../../common/utils/compare-password';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
@@ -12,7 +12,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   }
 
   async validate(username: string, password: string): Promise<IUser> {
-    const user: IUser = await this.usersService.findByLogin(username);
+    const user: IUser = await this.usersService.findOneByLogin(username);
 
     if (!user || user.isDeleted) {
       throw new UnauthorizedException('username or password is incorrect');

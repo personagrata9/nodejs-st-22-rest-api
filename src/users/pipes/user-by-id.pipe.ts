@@ -1,6 +1,6 @@
 import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
 import { IUser } from '../interfaces/user.interface';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from '../services/users.service';
 
 @Injectable()
 export class UserByIdPipe implements PipeTransform {

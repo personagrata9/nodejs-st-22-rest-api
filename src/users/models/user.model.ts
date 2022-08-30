@@ -7,9 +7,9 @@ import {
   Sequelize,
   Table,
 } from 'sequelize-typescript';
-import { Group } from 'src/groups/models/group.model';
-import { UserGroup } from 'src/groups/models/user-group.model.';
-import { RefreshToken } from 'src/auth/models/refresh-token.model';
+import { Group } from '../../groups/models/group.model';
+import { UserGroup } from '../../groups/models/user-group.model.';
+import { RefreshToken } from '../../auth/models/refresh-token.model';
 import { IUser } from '../interfaces/user.interface';
 
 @Table({ tableName: 'Users' })

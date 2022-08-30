@@ -1,7 +1,7 @@
 import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
 import { UserByIdPipe } from './user-by-id.pipe';
-import { AddUsersToGroupDto } from 'src/groups/dto/add-users-to-group.dto';
-import { UsersService } from 'src/users/services/users.service';
+import { AddUsersToGroupDto } from '../../groups/dto/add-users-to-group.dto';
+import { UsersService } from '../services/users.service';
 
 @Injectable()
 export class UsersArrayByIdPipe implements PipeTransform {

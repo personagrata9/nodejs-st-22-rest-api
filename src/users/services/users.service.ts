@@ -3,7 +3,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { IUser } from '../interfaces/user.interface';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UsersRepository } from '../repository/users.repository';
-import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-result.interface';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +21,7 @@ export class UsersService {
   findOneById = async (id: string): Promise<IUser> =>
     this.usersRepository.findOneById(id);
 
-  findByLogin = async (login: string): Promise<IUser> =>
+  findOneByLogin = async (login: string): Promise<IUser> =>
     this.usersRepository.findOneByLogin(login);
 
   create = async (createUserDto: CreateUserDto): Promise<IUser> =>

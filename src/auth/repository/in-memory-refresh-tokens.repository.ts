@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
+import { inMemoryDB } from '../../database/in-memory-db/in-memory-db';
 import { IRefreshToken } from '../interfaces/refresh-token.interface';
 import { RefreshTokensRepository } from './refresh-tokens.repository';
 import { v4 as uuidv4 } from 'uuid';

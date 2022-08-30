@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ExceptionResponse } from '../interfaces/exception-response.interface';
+import { IExceptionResponse } from '../interfaces/exception-response.interface';
 import { getExceptionMessage } from './get-exception-message';
 
-export const getExceptionResponse = (exception: unknown): ExceptionResponse => {
+export const getExceptionResponse = (
+  exception: unknown,
+): IExceptionResponse => {
   const statusCode: number =
     exception instanceof HttpException
       ? exception.getStatus()
@@ -12,7 +14,7 @@ export const getExceptionResponse = (exception: unknown): ExceptionResponse => {
 
   const error: string =
     exception instanceof HttpException
-      ? (exception.getResponse() as ExceptionResponse).error
+      ? (exception.getResponse() as IExceptionResponse).error
       : 'Internal Server Error';
 
   return {

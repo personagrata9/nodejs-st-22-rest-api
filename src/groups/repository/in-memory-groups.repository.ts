@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { inMemoryDB } from 'src/database/in-memory-db/in-memory-db';
-import { IPaginatedItemsResult } from 'src/common/interfaces/paginated-items-result.interface';
+import { inMemoryDB } from '../../database/in-memory-db/in-memory-db';
+import { IPaginatedItemsResult } from '../../common/interfaces/paginated-items-result.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
 import { IGroup } from '../interfaces/group.interface';
 import { GroupsRepository } from './groups.repository';
-import { NotUniqueError } from 'src/common/errors/not-unique.error';
+import { NotUniqueError } from '../../common/errors/not-unique.error';
 
 @Injectable()
 export class InMemoryGroupsRepository implements GroupsRepository {
