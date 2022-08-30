@@ -21,7 +21,7 @@ export class UsersService {
   findOneById = async (id: string): Promise<IUser> =>
     this.usersRepository.findOneById(id);
 
-  findByLogin = async (login: string): Promise<IUser> =>
+  findOneByLogin = async (login: string): Promise<IUser> =>
     this.usersRepository.findOneByLogin(login);
 
   create = async (createUserDto: CreateUserDto): Promise<IUser> =>

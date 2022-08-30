@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 import { Logger } from 'winston';
 import { WinstonLogger } from '../loggers/winston.logger';
 import { logException } from '../utils/log-exception';
-import { ExceptionResponse } from '../interfaces/exception-response.interface';
+import { IExceptionResponse } from '../interfaces/exception-response.interface';
 import { getExceptionResponse } from '../utils/get-exception-response';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class ExceptionLoggingInterceptor implements NestInterceptor {
         const req = ctx.getRequest<Request>();
         const res = ctx.getResponse<Response>();
 
-        const exceptionResponse: ExceptionResponse =
+        const exceptionResponse: IExceptionResponse =
           getExceptionResponse(error);
 
         res.status(exceptionResponse.statusCode).json(exceptionResponse);

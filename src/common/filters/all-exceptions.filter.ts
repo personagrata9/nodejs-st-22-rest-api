@@ -1,7 +1,7 @@
 import { Catch, ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Logger } from 'winston';
-import { ExceptionResponse } from '../interfaces/exception-response.interface';
+import { IExceptionResponse } from '../interfaces/exception-response.interface';
 import { WinstonLogger } from '../loggers/winston.logger';
 import { getExceptionResponse } from '../utils/get-exception-response';
 import { logException } from '../utils/log-exception';
@@ -20,7 +20,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const req = ctx.getRequest<Request>();
     const res = ctx.getResponse<Response>();
 
-    const exceptionResponse: ExceptionResponse =
+    const exceptionResponse: IExceptionResponse =
       getExceptionResponse(exception);
 
     res.status(exceptionResponse.statusCode).json(exceptionResponse);

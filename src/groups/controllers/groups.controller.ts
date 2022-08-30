@@ -23,6 +23,7 @@ import { GroupByIdPipe } from '../pipes/group-by-id.pipe';
 import { UsersArrayByIdPipe } from '../../users/pipes/users-by-id-array.pipe';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard';
 import { NotUniqueError } from '../../common/errors/not-unique.error';
+import { ISuccessResponse } from 'src/common/interfaces/success-response.interface';
 
 @UseGuards(AccessTokenGuard)
 @Controller('v1/groups')
@@ -65,10 +66,14 @@ export class GroupsController {
     @Param('groupId', new ParseUUIDPipe({ version: '4' }), GroupByIdPipe)
     group: IGroup,
     @Body(UsersArrayByIdPipe) addUsersToGroupDto: AddUsersToGroupDto,
-  ): Promise<void> {
+  ): Promise<ISuccessResponse> {
     const { userIds } = addUsersToGroupDto;
 
     await this.groupsService.addUsersToGroup(group.id, userIds);
+
+    return {
+      message: `users were successfully added to group with id ${group.id}`,
+    };
   }
 
   @Put(':id')

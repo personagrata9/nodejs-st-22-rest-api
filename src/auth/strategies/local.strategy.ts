@@ -12,7 +12,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   }
 
   async validate(username: string, password: string): Promise<IUser> {
-    const user: IUser = await this.usersService.findByLogin(username);
+    const user: IUser = await this.usersService.findOneByLogin(username);
 
     if (!user || user.isDeleted) {
       throw new UnauthorizedException('username or password is incorrect');

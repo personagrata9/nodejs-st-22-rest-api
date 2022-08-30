@@ -1,11 +1,11 @@
 import { Logger } from 'winston';
 import { Request, Response } from 'express';
 import { logArguments } from './log-arguments';
-import { ExceptionResponse } from '../interfaces/exception-response.interface';
+import { IExceptionResponse } from '../interfaces/exception-response.interface';
 
 export const logException = (
   logger: Logger,
-  exceptionResponse: ExceptionResponse,
+  exceptionResponse: IExceptionResponse,
   req: Request,
   res: Response,
   context?: string,
